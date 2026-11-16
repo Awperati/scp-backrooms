@@ -10,8 +10,20 @@ size="30,0.1,30"
 [sub_resource type="BoxMesh" id="BoxMesh_wall"]
 size="30,12,0.1"
 
+[sub_resource type="BoxMesh" id="BoxMesh_wall2"]
+size="0.1,12,30"
+
 [sub_resource type="BoxMesh" id="BoxMesh_pillar"]
 size="1.5,12,1.5"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_drive"]
+size="0.4,0.1,0.6"
+
+[sub_resource type="BoxMesh" id="BoxMesh_drive"]
+size="0.4,0.1,0.6"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door"]
+size="2,2,0.5"
 
 [node name="Level" type="Node3D"]
 script = ExtResource("1_lvl")
@@ -34,11 +46,11 @@ mesh = SubResource("BoxMesh_wall")
 
 [node name="WallE" type="MeshInstance3D" parent="Level"]
 location="15,6,0"
-mesh = SubResource("BoxMesh_wall")
+mesh = SubResource("BoxMesh_wall2")
 
 [node name="WallW" type="MeshInstance3D" parent="Level"]
 location="-15,6,0"
-mesh = SubResource("BoxMesh_wall")
+mesh = SubResource("BoxMesh_wall2")
 
 [node name="Pillar1" type="MeshInstance3D" parent="Level"]
 location="8,6,8"
@@ -58,45 +70,47 @@ mesh = SubResource("BoxMesh_pillar")
 
 [node name="Light1" type="PointLight3D" parent="Level"]
 location="0,5,0"
-light_color="&hFFFF80"
-light_energy=2.0
-light_radius=15
+color="&hFFFF80"
+energy=2.0
+radius=15
 
 [node name="Light2" type="PointLight3D" parent="Level"]
 location="10,5,10"
-light_color="&hFFFF80"
-light_energy=2.0
-light_radius=15
+color="&hFFFF80"
+energy=2.0
+radius=15
 
 [node name="DataDrive1" type="StaticBody3D" parent="Level"]
 script = ExtResource("2_dd")
 location="5,0.5,5"
 
 [node name="DataDrive1/Collision" type="CollisionShape3D" parent="Level/DataDrive1"]
+shape = SubResource("BoxShape3D_drive")
 
 [node name="DataDrive1/Mesh" type="MeshInstance3D" parent="Level/DataDrive1"]
-location="0,0.5,0"
+mesh = SubResource("BoxMesh_drive")
 
 [node name="DataDrive1/Light" type="PointLight3D" parent="Level/DataDrive1"]
 location="0,0.5,0"
-light_color="&hFFD700"
-light_energy=1.5
-light_radius=4
+color="&hFFD700"
+energy=1.5
+radius=4
 
 [node name="DataDrive2" type="StaticBody3D" parent="Level"]
 script = ExtResource("2_dd")
 location="-5,0.5,-5"
 
 [node name="DataDrive2/Collision" type="CollisionShape3D" parent="Level/DataDrive2"]
+shape = SubResource("BoxShape3D_drive")
 
 [node name="DataDrive2/Mesh" type="MeshInstance3D" parent="Level/DataDrive2"]
-location="0,0.5,0"
+mesh = SubResource("BoxMesh_drive")
 
 [node name="DataDrive2/Light" type="PointLight3D" parent="Level/DataDrive2"]
 location="0,0.5,0"
-light_color="&hFFD700"
-light_energy=1.5
-light_radius=4
+color="&hFFD700"
+energy=1.5
+radius=4
 
 [node name="ExitDoor" type="Node3D" parent="Level"]
 script = ExtResource("3_ed")
@@ -106,6 +120,8 @@ location="0,0,12"
 [node name="ExitDoor/Trigger" type="Area3D" parent="Level/ExitDoor"]
 
 [node name="ExitDoor/Trigger/Collision" type="CollisionShape3D" parent="Level/ExitDoor/Trigger"]
+shape = SubResource("BoxShape3D_door")
 
 [node name="ExitDoor/DoorFrame" type="MeshInstance3D" parent="Level/ExitDoor"]
-location="0,1,0"
+mesh = SubResource("BoxMesh_wall")
+location="0,2,12"

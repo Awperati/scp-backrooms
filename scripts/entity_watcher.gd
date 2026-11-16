@@ -29,17 +29,17 @@ func _process(delta: float) -> void:
 	if dist <= detection_range and angle <= deg_to_rad(detection_cone / 2.0):
 		lose_sight_timer = 0.0
 		$EyeLight.light_energy = 1.0
+		is_attacking = true
 		
-		if dist <= detection_range * 0.5 and not is_attacking:
+		if dist <= detection_range * 0.5:
 			_attack_player(delta)
 		else:
 			# Track player
 			look_at(player.global_position, Vector3.UP)
 	else:
+		is_attacking = false
 		lose_sight_timer += delta
 		$EyeLight.light_energy = 0.2
-		if lose_sight_timer >= lose_sight_timeout:
-			pass  # Lost sight, will stop attacking
 
 func _attack_player(delta: float) -> void:
 	attack_timer += delta

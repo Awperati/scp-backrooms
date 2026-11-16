@@ -34,8 +34,14 @@ func _process(delta: float) -> void:
 		teleport_timer = 0.0
 		_flicker()
 	
+	# Flicker effect
+	if flicker_timer > 0:
+		flicker_timer -= delta
+		$FlickerLight.light_energy = randf() * 2.0
+	else:
+		$FlickerLight.light_energy = 0.0
+	
 	if dist <= detection_range * 0.5 and not is_on_floor():
-		# Stalker is close and airborne (teleported)
 		_move_toward_player(delta)
 	elif dist <= detection_range * 0.3:
 		_attack_player(delta)
@@ -65,10 +71,3 @@ func _attack_player(delta: float) -> void:
 func _flicker() -> void:
 	$FlickerLight.light_energy = 2.0
 	flicker_timer = 0.5
-
-func _process_flicker(delta: float) -> void:
-	if flicker_timer > 0:
-		flicker_timer -= delta
-		$FlickerLight.light_energy = randf() * 2.0
-	else:
-		$FlickerLight.light_energy = 0.0

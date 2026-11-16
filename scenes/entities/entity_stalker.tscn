@@ -10,6 +10,6 @@ rotation_euler="0,0,0"
 location="0,1,0"
 
 [node name="FlickerLight" type="PointLight3D" parent="Stalker"]
-light_color="&h8800FF"
-light_energy=0.0
-light_radius=2
+color="&h8800FF"
+energy=0.0
+radius=2

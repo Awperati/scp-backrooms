@@ -14,6 +14,6 @@ rotation_euler="0,0,0"
 location="0,2,0.5"
 
 [node name="EyeLight" type="PointLight3D" parent="Watcher/Eye"]
-light_color="&h00FFFF"
-light_energy=0.0
-light_radius=3
+color="&h00FFFF"
+energy=0.0
+radius=3
