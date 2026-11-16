@@ -1,4 +1,4 @@
-extends "res://scripts/entity.gd"
+extends "res://scripts/entity_base_2d.gd"
 
 # Hound-specific behavior
 var ai_state: String = "patrolling"

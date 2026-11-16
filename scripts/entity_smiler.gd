@@ -1,4 +1,4 @@
-extends "res://scripts/entity_base.gd"
+extends "res://scripts/entity_base_2d.gd"
 
 # Smiler Entity
 # This class implements the specific behavior for the Smiler entity
@@ -60,8 +60,8 @@ func pursue_player(delta):
 	move_and_slide()
 	
 	# Rotate to face player
-	if direction != Vector3.ZERO:
-		rotation.y = direction.angle_to(Vector3.FORWARD)
+	if direction != Vector2.ZERO:
+		rotation = direction.angle_to(Vector2.RIGHT)
 
 # Attack the player
 func attack_player(delta):

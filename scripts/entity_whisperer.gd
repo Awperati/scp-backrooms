@@ -1,4 +1,9 @@
-extends "res://scripts/entity.gd"
+extends "res://scripts/entity_base_2d.gd"
+
+# Whisperer-specific behavior
+var ai_state: String = "whispering"
+var aggression: float = 0.4
+var attacking: bool = false
 
 func _ready():
 	super._ready()

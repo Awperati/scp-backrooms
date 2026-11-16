@@ -1,4 +1,9 @@
-extends "res://scripts/entity.gd"
+extends "res://scripts/entity_base_2d.gd"
+
+# Watcher-specific behavior
+var ai_state: String = "watching"
+var aggression: float = 0.2
+var attacking: bool = false
 
 func _ready():
 	super._ready()

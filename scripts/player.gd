@@ -1,4 +1,10 @@
-extends "res://scripts/entity.gd"
+extends "res://scripts/entity_base_2d.gd"
+
+# Player-specific behavior
+var sanity: float = 100.0
+var max_sanity: float = 100.0
+var is_stunned: bool = false
+var is_dizzy: bool = false
 
 func _ready():
 	super._ready()

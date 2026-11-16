@@ -1,4 +1,9 @@
-extends "res://scripts/entity.gd"
+extends "res://scripts/entity_base_2d.gd"
+
+# Stalker-specific behavior
+var ai_state: String = "hiding"
+var aggression: float = 0.5
+var attacking: bool = false
 
 func _ready():
 	super._ready()

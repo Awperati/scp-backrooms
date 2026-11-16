@@ -101,6 +101,18 @@ custom_colors = {
 [node name="AudioManager" type="Node" parent="MainGame"]
 script = ExtResource("uid://audiomgr001")
 
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+bus = "Music"
+volume_db = -10.0
+
+[node name="SFXPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+bus = "SoundEffects"
+volume_db = 0.0
+
+[node name="AmbientPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+bus = "Ambient"
+volume_db = -15.0
+
 [node name="ParticleManager" type="Node" parent="MainGame"]
 script = ExtResource("uid://partmgr001")
 

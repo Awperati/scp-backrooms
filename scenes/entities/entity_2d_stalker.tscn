@@ -1,0 +1,37 @@
+[gd_scene load_steps=1 format=3 uid="uid://entity002"]
+
+[ext_resource type="Script" path="res://scripts/entity_2d_stalker.gd" id="1_entity_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/placeholder/entity_stalker.png" id="2_entity_texture"]
+
+[node name="EntityStalker" type="Sprite2D"]
+script = ExtResource("1_entity_script")
+texture = ExtResource("2_entity_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="Collision" type="CollisionShape2D"]
+parent = "EntityStalker"
+shape = ExtResource("1_collision_shape")
+
+[node name="Animation" type="AnimationPlayer"]
+parent = "EntityStalker"
+animation = ExtResource("1_idle_animation")
+
+[sub_resource type="RectangleShape2D" id="1_collision_shape"]
+size = Vector2(32, 32)
+
+[sub_resource type="Animation" id="1_idle_animation"]
+length = 1.0
+tracks = [ExtResource("1_track")]
+loop = true
+
+[sub_resource type="AnimationTrack" id="1_track"]
+type = "Sprite2D"
+path = "texture"
+keys = [
+	{
+		time = 0.0,
+		value = ExtResource("2_entity_texture")
+	}
+]

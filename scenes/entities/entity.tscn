@@ -1,16 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid:10000000000000000000000000000001"]
+[gd_scene load_steps=3 format=3 uid="uid://entity001"]
 
-[ext_resource type="Script" path="res://scripts/entity.gd" id="1_001"]
+[node name="Entity" type="Node3D"]
+visibility_layer = 1
 
-[node name="Entity" type="Node2D"]
-script = ExtResource("1_001")
-name = "Entity"
-position = Vector2(0, 0)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 1.0
-detection_range = 5.0
-attack_range = 1.0
-damage = 10
-sprite = NodePath("Sprite")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Entity"]
+mesh = ExtResource("uid://entitymesh001")
+material_override = ExtResource("uid://entitymat001")
+position = Vector3(0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Entity"]
+shape = ExtResource("uid://entitycoll001")
+position = Vector3(0, 1, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Entity"]
+current_animation = "idle"
+
+[node name="EntityAI" type="Node" parent="Entity"]
+script = ExtResource("uid://entityai001")

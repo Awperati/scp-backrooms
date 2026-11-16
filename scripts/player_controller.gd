@@ -30,8 +30,6 @@ var is_sprinting: bool = false
 func _ready():
 	# Initialize references
 	camera = $Camera3D
-	audio_manager = get_tree().get_nodes_in_group("audio_manager")[0] if get_tree().get_nodes_in_group("audio_manager").size() > 0 else null
-	ui_manager = get_tree().get_nodes_in_group("ui_manager")[0] if get_tree().get_nodes_in_group("ui_manager").size() > 0 else null
 	model = $Model
 	flashlight = $Flashlight
 	footsteps_particles = $FootstepParticles
@@ -44,6 +42,15 @@ func _ready():
 	
 	# Connect to signals
 	connect_signals()
+	
+	# Find audio manager and UI manager in the tree
+	var audio_nodes = get_tree().get_nodes_in_group("audio_manager")
+	if audio_nodes.size() > 0:
+		audio_manager = audio_nodes[0]
+	
+	var ui_nodes = get_tree().get_nodes_in_group("ui_manager")
+	if ui_nodes.size() > 0:
+		ui_manager = ui_nodes[0]
 
 func connect_signals():
 	# Connect signals
