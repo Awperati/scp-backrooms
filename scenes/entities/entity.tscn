@@ -1,22 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://entity00"]
+[gd_scene load_steps=3 format=3 uid="uid:10000000000000000000000000000000"]
 
-[ext_resource type="Script" path="res://scripts/entity.gd" id="1_entity"]
-[ext_resource type="Script" path="res://scripts/entity_ai.gd" id="2_ai"]
+[ext_resource type="Script" path="res://scripts/entity.gd" uid="uid:10000000000000000000000000000000"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_entity"]
-radius=0.5
-height=1.5
+[resource]
+resource_name = "entity"
+entity_type = "ANOMALOUS"
+health = 100.0
+max_health = 100.0
+speed = 1.0
+detection_range = 5.0
+attack_range = 1.0
+damage = 10.0
 
-[node name="Entity" type="Node3D"]
-script = ExtResource("1_entity")
-
-[node name="Body" type="CharacterBody3D" parent="Entity"]
-rotation_euler="0,0,0"
-
-[node name="Collision" type="CollisionShape3D" parent="Body"]
-shape = SubResource("CapsuleShape3D_entity")
-
-[node name="EntityAI" type="Node3D" parent="Body"]
-script = ExtResource("2_ai")
-
-[node name="Audio" type="AudioStreamPlayer3D" parent="Body"]
+[body]
+position = Vector2(0, 0)
+script = ExtResource("Script", "uid:10000000000000000000000000000000")
