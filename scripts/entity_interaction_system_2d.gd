@@ -78,7 +78,7 @@ func handle_player_entity_collision(player: Node2D, entity: Node2D):
 		return
 	
 	# Check if entity is alive
-	if not entity.is_alive():
+	if not entity.is_alive:
 		return
 	
 	# Get entity damage
@@ -97,7 +97,7 @@ func handle_entity_player_collision(entity: Node2D, player: Node2D):
 		return
 	
 	# Check if entity is alive
-	if not entity.is_alive():
+	if not entity.is_alive:
 		return
 	
 	# Check if player is invulnerable
@@ -138,7 +138,7 @@ func deal_player_damage(entity: Node2D):
 		return
 	
 	# Check if entity is alive
-	if not entity.is_alive():
+	if not entity.is_alive:
 		return
 	
 	# Get damage
@@ -394,7 +394,7 @@ func handle_entity_detection(entity: Node2D):
 		return
 	
 	# Check if entity is alive
-	if not entity.is_alive():
+	if not entity.is_alive:
 		return
 	
 	# Check distance
@@ -414,11 +414,11 @@ func handle_entity_attack(entity: Node2D):
 		return
 	
 	# Check if entity is alive
-	if not entity.is_alive():
+	if not entity.is_alive:
 		return
 	
 	# Check if entity is detected
-	if not entity.is_detected():
+	if not entity.is_detected:
 		return
 	
 	# Check distance
@@ -446,7 +446,7 @@ func handle_player_attack():
 		var nearby_entities = entity_manager.get_entities_in_range(player.position, attack_range)
 		
 		for entity in nearby_entities:
-			if entity.is_alive():
+			if entity.is_alive:
 				# Deal damage to entity
 				deal_player_damage(entity)
 

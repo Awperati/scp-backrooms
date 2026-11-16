@@ -205,7 +205,7 @@ func get_entities_by_detection_state(detection_state: bool) -> Array:
 	# Get entities by detection state
 	var result = []
 	for entity in entities:
-		if entity.is_detected() == detection_state:
+		if entity.is_detected == detection_state:
 			result.append(entity)
 	return result
 
@@ -299,7 +299,7 @@ func spawn_entities_at_spawn_points(spawn_points: Array) -> Array:
 func destroy_all_entities():
 	# Destroy all entities
 	for entity in entities.duplicate():
-		if entity != null and entity.is_alive():
+		if entity != null and entity.is_alive:
 			entity.queue_free()
 	
 	# Clear lists

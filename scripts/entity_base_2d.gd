@@ -124,12 +124,6 @@ func set_health(health: float):
 func set_max_health(max_health: float):
 	max_health = max_health
 
-func is_alive() -> bool:
-	return is_alive
-
-func is_detected() -> bool:
-	return is_detected
-
 func get_entity_type() -> String:
 	return entity_type
 
