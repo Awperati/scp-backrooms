@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://datadrive2d"]
+
+[ext_resource type="Script" path="res://scripts/data_drive_2d.gd" id="1_dd"]
+[ext_resource type="Texture2D" path="res://assets/textures/data_drive.png" id="2_drive_texture"]
+
+[node name="DataDrive" type="Node2D"]
+script = ExtResource("1_dd")
+
+[node name="Sprite" type="Sprite2D"]
+parent = "DataDrive"
+texture = ExtResource("2_drive_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="Collision" type="CollisionShape2D" parent="DataDrive"]
+shape = CircleShape2D.new()

@@ -1,0 +1,16 @@
+[gd_scene load_steps=7 format=3 uid="uid://game2d00"]
+
+[ext_resource type="Script" path="res://scripts/game_controller_2d.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/level_0.tscn" id="2_level0"]
+[ext_resource type="PackedScene" path="res://scenes/player_2d.tscn" id="3_player"]
+
+[node name="Game2D" type="Node2D"]
+script = ExtResource("1_game")
+
+[node name="Level0" type="Node2D"]
+parent = "Game2D"
+scene = ExtResource("2_level0")
+
+[node name="Player" type="Node2D"]
+parent = "Game2D"
+scene = ExtResource("3_player")

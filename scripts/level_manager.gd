@@ -1,51 +1,60 @@
-extends Node3D
+## Manages level loading and transitions
+extends Node
 
-# Level manager for SCP Backrooms
-# Handles level transitions, data drive collection, and exit logic
+# Level properties
+@export var level_name: String = "Level 0"
+@export var required_drives: int = 2
+@export var level_index: int = 0
 
-@onready var data_drives = []
-@onready var exit_door = null
-@onready var level_name = "Level 0"
-@onready var required_drives = 1
+# References to game components
+var game_controller: Node
+var player: Node3D
 
-func _ready():
-	# Find all data drives in this level
-	data_drives = get_tree().get_nodes_in_group("data_drive")
-	# Find exit door
-	exit_door = get_node("ExitDoor")
+func _ready() -> void:
+	# Get references to game controller
+	game_controller = get_tree().get_first_node_in_group("game_controller")
 	
-	# Initialize level
-	print("Level loaded: " + level_name)
+	# Get player reference
+	player = get_tree().get_first_node_in_group("player")
 	
-	# Update UI
-	if GameManager.instance:
-		GameManager.instance.update_level_info(level_name, required_drives)
-		GameManager.instance.update_drives_collected(data_drives.size())
+	# Setup signals
+	if game_controller:
+		game_controller.connect("game_started", self, "_on_game_started")
+		game_controller.connect("game_over", self, "_on_game_over")
+		game_controller.connect("victory", self, "_on_victory")
 
-func _process(delta):
-	# Check if all data drives are collected
-	if data_drives.size() > 0:
-		var collected = 0
-		for drive in data_drives:
-			if drive.is_collected:
-				collected += 1
-		# Update UI
-		if GameManager.instance:
-			GameManager.instance.update_drives_collected(collected)
+func _on_game_started() -> void:
+	# Initialize level when game starts
+	print("Starting level %s" % level_name)
+
+func _on_game_over() -> void:
+	# Handle game over for this level
+	print("Level %s game over" % level_name)
+
+func _on_victory() -> void:
+	# Handle victory for this level
+	print("Level %s victory" % level_name)
+
+func check_level_completion() -> void:
+	# Check if level can be completed based on collected drives
+	if GameController.data_drives_collected >= required_drives:
+		# Level can be completed
+		complete_level()
+
+func complete_level() -> void:
+	# Complete current level
+	print("Level %s completed!" % level_name)
 	
-	# Check exit condition
-	if exit_door and exit_door.is_active():
-		if data_drives.size() > 0:
-			var collected = 0
-			for drive in data_drives:
-				if drive.is_collected:
-					collected += 1
-			if collected >= required_drives:
-				# Player can exit
-				if GameManager.instance:
-					GameManager.instance.complete_level()
+	# Notify game controller of level completion
+	if game_controller:
+		game_controller.victory()
 
-func collect_data_drive(drive):
-	# Handle data drive collection
-	if GameManager.instance:
-		GameManager.instance.collect_data_drive()
+func _on_exit_door_triggered(required_drives: int) -> void:
+	# Handle exit door interaction
+	if GameController.data_drives_collected >= required_drives:
+		# Unlock and enter next level
+		if game_controller:
+			game_controller.load_level(level_index + 1)
+	else:
+		# Door is locked, notify player
+		print("Door is locked. Collect %d data drives to proceed." % required_drives)

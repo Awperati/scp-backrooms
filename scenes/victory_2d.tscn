@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://victory2d"]
+
+[ext_resource type="Script" path="res://scripts/victory_2d.gd" id="1_victory"]
+[ext_resource type="Texture2D" path="res://assets/textures/placeholder/floor.png" id="2_background"]
+
+[node name="Victory2D" type="Node2D"]
+script = ExtResource("1_victory")
+
+[node name="Background" type="Sprite2D"]
+parent = "Victory2D"
+texture = ExtResource("2_background")
+position = Vector2(0, 0)
+scale = Vector2(10, 10)
+material = null
+
+[node name="VictoryLabel" type="Label"]
+parent = "Victory2D"
+text = "VICTORY"
+position = Vector2(0, -50)
+horizontal_alignment = 1
+vertical_alignment = 1
+custom_fonts/font = DynamicFont.new()
+custom_fonts/font_size = 48
+custom_colors/font_color = Color(0, 1, 0, 1)
+
+[node name="ContinueButton" type="Button"]
+parent = "Victory2D"
+text = "Continue"
+position = Vector2(-100, 50)
+size = Vector2(200, 50)
+custom_styles/normal/bg_color = Color(0.25, 0.25, 0.25, 1)
+custom_styles/normal/font_color = Color(1, 1, 1, 1)
+
+[node name="MainMenuButton" type="Button"]
+parent = "Victory2D"
+text = "Main Menu"
+position = Vector2(-100, 120)
+size = Vector2(200, 50)
+custom_styles/normal/bg_color = Color(0.25, 0.25, 0.25, 1)
+custom_styles/normal/font_color = Color(1, 1, 1, 1)

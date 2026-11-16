@@ -1,101 +1,72 @@
-## Hound entity. Patrols corridors, chases player when detected.
-extends Node3D
+## Hound entity with aggressive AI behavior
+extends "res://scripts/entity.gd"
 
-var detection_radius: float = 15.0
-var chase_speed: float = 6.0
-var attack_damage: float = 15.0
-var attack_cooldown: float = 2.0
-var retreat_timeout: float = 8.0
+# Hound properties
+@export var detection_range: float = 8.0
+@export var attack_range: float = 1.5
+@export var attack_cooldown: float = 2.0
+@export var attack_damage: int = 25
+@export var speed: float = 2.5
 
-enum State { IDLE, ALERT, CHASE, ATTACK, RETREAT }
-var state: State = State.IDLE
+# AI state
 var attack_timer: float = 0.0
-var retreat_timer: float = 0.0
-var patrol_waypoints: Array[Vector3] = []
-var current_patrol_index: int = 0
-var last_seen_position: Vector3 = Vector3.ZERO
-var player: Node3D
+var is_attacking: bool = false
 
-func _ready() -> void:
-	# Generate patrol waypoints
-	for i in range(4):
-		patrol_waypoints.append(Vector3(
-			randf_range(-7.0, 7.0),
-			0.0,
-			randf_range(-7.0, 7.0)
-		))
-		$EyesLight1.light_energy = 0.5
-		$EyesLight2.light_energy = 0.5
-	
-	player = get_tree().get_first_node_in_group("player")
+func setup_ai() -> void:
+	# Setup hound AI behavior
+	print("Hound AI initialized")
 
-func _process(delta: float) -> void:
-	if not player:
+func update_ai(delta: float) -> void:
+	# Hound AI behavior
+	if not is_alive:
 		return
 	
-	var dist = global_position.distance_to(player.global_position)
+	# Update attack timer
+	if attack_timer > 0:
+		attack_timer -= delta
 	
-	match state:
-		State.IDLE:
-			if dist <= detection_radius:
-				state = State.ALERT
-			else:
-				_patrol(delta)
-		State.ALERT:
-			if dist > detection_radius * 1.5:
-				_retreat()
-			elif dist <= detection_radius * 0.5:
-				state = State.CHASE
-			else:
-				_move_toward_player(delta)
-		State.CHASE:
-			if dist > detection_radius * 2.0:
-				_retreat()
-			elif dist <= detection_radius * 0.3:
-				state = State.ATTACK
-			else:
-				_move_toward_player(delta)
-		State.ATTACK:
-			attack_timer += delta
-			if attack_timer >= attack_cooldown:
-				state = State.CHASE
-				attack_timer = 0.0
-			elif dist <= detection_radius * 0.3:
-				_attack_player()
-		State.RETREAT:
-			retreat_timer += delta
-			if retreat_timer >= retreat_timeout:
-				state = State.IDLE
-				retreat_timer = 0.0
-			else:
-				_retreat_to_position(delta)
-
-func _patrol(delta: float) -> void:
-	if patrol_waypoints.is_empty():
-		return
+	# Check if player is in range
+	var player_distance = global_position.distance_to(player.global_position)
 	
-	var target = patrol_waypoints[current_patrol_index]
-	var dir = (target - global_position).normalized()
-	var speed = chase_speed * 0.3
-	position += dir * speed * delta
-	
-	if global_position.distance_to(target) < 0.5:
-		current_patrol_index = (current_patrol_index + 1) % patrol_waypoints.size()
+	if player_distance < detection_range:
+		# Move toward player
+		var direction = (player.global_position - global_position).normalized()
+		velocity = direction * speed
+		
+		# Rotate to face player
+		look_at(player.global_position, Vector3.UP)
+		
+		# Attack if in range
+		if player_distance < attack_range and attack_timer <= 0:
+			attack_player()
+	else:
+		# Idle behavior
+		velocity = Vector3.ZERO
 
-func _move_toward_player(delta: float) -> void:
-	var dir = (player.global_position - global_position).normalized()
-	position += dir * chase_speed * delta
+func attack_player() -> void:
+	# Attack the player
+	if game_controller and not is_attacking:
+		is_attacking = true
+		attack_timer = attack_cooldown
+		
+		# Damage player
+		game_controller.damage_player(attack_damage)
+		
+		# Reset attack state
+		# This would be done with a timer or animation
+		is_attacking = false
 
-func _attack_player() -> void:
-	var dist = global_position.distance_to(player.global_position)
-	if dist <= detection_radius * 0.3:
-		GameController.lose_sanity(attack_damage)
+func _on_player_detected(player: Node3D) -> void:
+	# Handle player detection
+	print("Hound detected player")
 
-func _retreat() -> void:
-	state = State.RETREAT
-	retreat_timer = 0.0
-	last_seen_position = global_position + Vector3(0, 0, 5)
+func _on_player_attacked(player: Node3D) -> void:
+	# Handle player attack
+	print("Hound attacked player")
 
-func _retreat_to_position(delta: float) -> void:
-	var dir = (last_seen_position - global_position).normalized()
-	position += dir * chase_speed * 0.5 * delta
+func _on_player_in_range(player: Node3D) -> void:
+	# Handle player in range
+	print("Hound player in range")
+
+# Signals
+signal hound_attack

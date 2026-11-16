@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://titlescreen2d"]
+
+[ext_resource type="Script" path="res://scripts/title_screen_2d.gd" id="1_title"]
+[ext_resource type="Texture2D" path="res://assets/textures/placeholder/floor.png" id="2_background"]
+
+[node name="TitleScreen2D" type="Node2D"]
+script = ExtResource("1_title")
+
+[node name="Background" type="Sprite2D"]
+parent = "TitleScreen2D"
+texture = ExtResource("2_background")
+position = Vector2(0, 0)
+scale = Vector2(10, 10)
+material = null
+
+[node name="TitleLabel" type="Label"]
+parent = "TitleScreen2D"
+text = "SCP BACKROOMS"
+position = Vector2(0, -100)
+horizontal_alignment = 1
+vertical_alignment = 1
+custom_fonts/font = DynamicFont.new()
+custom_fonts/font_size = 48
+custom_colors/font_color = Color(1, 1, 1, 1)
+
+[node name="StartButton" type="Button"]
+parent = "TitleScreen2D"
+text = "Start Game"
+position = Vector2(-100, 50)
+size = Vector2(200, 50)
+custom_styles/normal/bg_color = Color(0.25, 0.25, 0.25, 1)
+custom_styles/normal/font_color = Color(1, 1, 1, 1)
+
+[node name="QuitButton" type="Button"]
+parent = "TitleScreen2D"
+text = "Quit"
+position = Vector2(-100, 120)
+size = Vector2(200, 50)
+custom_styles/normal/bg_color = Color(0.25, 0.25, 0.25, 1)
+custom_styles/normal/font_color = Color(1, 1, 1, 1)

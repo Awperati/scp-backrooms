@@ -1,44 +1,102 @@
-extends Node3D
+## Manages all entities in the game
+extends Node
 
-# Manages entities in the game world
+# Entity types
+enum EntityType {
+	ANOMALOUS,
+	DESTRUCTIVE,
+	ITEM,
+	DOOR
+}
 
-@onready var entities = []
-@onready var active_entities = []
+# Entity states
+enum EntityState {
+	IDLE,
+	ALERT,
+	CHASE,
+	ATTACK,
+	RETREAT
+}
 
-func _ready():
-	# Initialize entity manager
-	print("Entity manager ready")
+# References to game components
+var game_controller: Node
+var player: Node3D
+var level_manager: Node
 
-func add_entity(entity):
-	# Add a new entity to the game
-	if not entity in entities:
-		entities.append(entity)
-		active_entities.append(entity)
-		print("Added entity: " + entity.name)
+# Spawn configuration
+var spawn_rates: Dictionary = {
+	0: { # Level 0
+		"smiler": 2,
+		"hound": 1,
+		"stalker": 1,
+		"watcher": 0,
+		"whisperer": 0
+	}
+}
 
-func remove_entity(entity):
-	# Remove an entity from the game
-	if entity in entities:
-		entities.erase(entity)
-		if entity in active_entities:
-			active_entities.erase(entity)
-		print("Removed entity: " + entity.name)
+func _ready() -> void:
+	# Get references to game controller
+	game_controller = get_tree().get_first_node_in_group("game_controller")
+	
+	# Get player reference
+	player = get_tree().get_first_node_in_group("player")
+	
+	# Setup signals
+	if game_controller:
+		game_controller.connect("game_started", self, "_on_game_started")
+		game_controller.connect("game_over", self, "_on_game_over")
+		game_controller.connect("victory", self, "_on_victory")
 
-func get_entities():
-	return entities
+func _on_game_started() -> void:
+	# Start spawning entities when game starts
+	_spawn_entities_for_level(0)
 
-func get_active_entities():
-	return active_entities
+func _on_game_over() -> void:
+	# Stop spawning when game is over
+	_clear_entities()
 
-func get_entity_by_type(type_name):
-	for entity in active_entities:
-		if entity.has_method("get_entity_type") and entity.get_entity_type() == type_name:
-			return entity
-	return null
+func _on_victory() -> void:
+	# Clear entities on victory
+	_clear_entities()
 
-func get_entity_count_by_type(type_name):
-	var count = 0
-	for entity in active_entities:
-		if entity.has_method("get_entity_type") and entity.get_entity_type() == type_name:
-			count += 1
-	return count
+func spawn_entities(level_index: int) -> void:
+	# Spawn entities for a specific level
+	_spawn_entities_for_level(level_index)
+
+func _spawn_entities_for_level(level_index: int) -> void:
+	# Get spawn configuration for level
+	if not spawn_rates.has(level_index):
+		return
+	
+	var level_spawns = spawn_rates[level_index]
+	
+	# Spawn each type of entity
+	for entity_type in level_spawns.keys():
+		var count = level_spawns[entity_type]
+		
+		# Spawn the entity instances
+		for i in range(count):
+			var entity_scene = preload("res://scenes/entities/entity_%s.tscn" % entity_type)
+			var entity_instance = entity_scene.instantiate()
+			
+			# Position the entity in a random location
+			var position = Vector3(
+				randf_range(-10.0, 10.0),
+				0.0,
+				randf_range(-10.0, 10.0)
+			)
+			entity_instance.global_position = position
+			
+			# Add to scene
+			add_child(entity_instance)
+
+func _clear_entities() -> void:
+	# Clear all entities from the scene
+	for child in get_children():
+		if child.name != "GameController":
+			child.queue_free()
+
+func _on_entity_destroyed(entity: Node) -> void:
+	# Handle entity destruction
+	if entity in get_children():
+		entity.queue_free()

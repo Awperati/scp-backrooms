@@ -1,40 +1,84 @@
-## Smiler entity. Appears in darkness, attacks when flashlight is off.
-extends Node3D
+## Smiler entity with mimicry behavior
+extends "res://scripts/entity.gd"
 
-var detection_radius: float = 3.0
-var flashlight_off_time: float = 0.0
-var is_visible: bool = false
-var player: Node3D
+# Smiler properties
+@export var detection_range: float = 5.0
+@export var attack_range: float = 1.0
+@export var attack_cooldown: float = 3.0
+@export var attack_damage: int = 15
+@export var speed: float = 1.5
 
-func _ready() -> void:
-	$Sprite2D.billboard = GeometryInstance3D.BILLBOARD_ENABLED
-	$Sprite2D.material_override = SpatialMaterial.new()
-	$Sprite2D.material_override.albedo_color = Color.WHITE
-	$Sprite2D.material_override.emissive = Color.WHITE
-	$Sprite2D.material_override.emissive_multiplier = 2.0
-	visible = false
-	
-	player = get_tree().get_first_node_in_group("player")
+# AI state
+var attack_timer: float = 0.0
+var is_attacking: bool = false
+var is_mimicking: bool = false
 
-func _process(delta: float) -> void:
-	if not player:
+func setup_ai() -> void:
+	# Setup smiler AI behavior
+	print("Smiler AI initialized")
+
+func update_ai(delta: float) -> void:
+	# Smiler AI behavior
+	if not is_alive:
 		return
 	
-	var dist = global_position.distance_to(player.global_position)
-	var flashlight = player.get_node("Body/PlayerFlashlight")
-	var flashlight_on = flashlight.flashlight_on if flashlight else true
+	# Update attack timer
+	if attack_timer > 0:
+		attack_timer -= delta
 	
-	if dist <= detection_radius and not flashlight_on:
-		flashlight_off_time += delta
-		if flashlight_off_time >= 2.0:
-			# Attack!
-			GameController.lose_sanity(50.0)
-			flashlight_off_time = 0.0
-	elif dist <= detection_radius and flashlight_on:
-		flashlight_off_time = 0.0
-		is_visible = true
-		visible = true
+	# Check if player is in range
+	var player_distance = global_position.distance_to(player.global_position)
+	
+	if player_distance < detection_range:
+		# Move toward player
+		var direction = (player.global_position - global_position).normalized()
+		velocity = direction * speed
+		
+		# Rotate to face player
+		look_at(player.global_position, Vector3.UP)
+		
+		# Mimic player if close enough
+		if player_distance < attack_range:
+			mimic_player()
+		
+		# Attack if in range and cooldown is over
+		if player_distance < attack_range and attack_timer <= 0:
+			attack_player()
 	else:
-		flashlight_off_time = 0.0
-		is_visible = false
-		visible = false
+		# Idle behavior
+		velocity = Vector3.ZERO
+
+func mimic_player() -> void:
+	# Mimic player movements
+	if not is_mimicking:
+		is_mimicking = true
+		# This would implement player movement mimicry
+		# For now just a placeholder
+		print("Smiler mimicking player")
+
+func attack_player() -> void:
+	# Attack the player
+	if game_controller and not is_attacking:
+		is_attacking = true
+		attack_timer = attack_cooldown
+		
+		# Damage player
+		game_controller.damage_player(attack_damage)
+		
+		# Reset attack state
+		is_attacking = false
+
+func _on_player_detected(player: Node3D) -> void:
+	# Handle player detection
+	print("Smiler detected player")
+
+func _on_player_attacked(player: Node3D) -> void:
+	# Handle player attack
+	print("Smiler attacked player")
+
+func _on_player_in_range(player: Node3D) -> void:
+	# Handle player in range
+	print("Smiler player in range")
+
+# Signals
+signal smiler_attack

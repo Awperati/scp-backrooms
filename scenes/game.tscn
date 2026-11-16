@@ -1,29 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://game000"]
+[gd_scene load_steps=10 format=3 uid="uid://game000"]
 
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_plr"]
-[ext_resource type="PackedScene" path="res://scenes/level.tscn" id="2_lvl"]
-[ext_resource type="PackedScene" path="res://scenes/ui.tscn" id="3_ui"]
-[ext_resource type="Script" path="res://scripts/audio_manager.gd" id="4_au"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/levels/level_0.tscn" id="3_level"]
+[ext_resource type="PackedScene" path="res://scenes/ui.tscn" id="4_ui"]
 
 [node name="Game" type="Node3D"]
+script = ExtResource("1_main")
+# Main game scene
 
-[node name="Player" type="Node3D" parent="."]
-script = ExtResource("1_plr")
+[node name="Player" type="Node3D" parent="Game"]
+scene = ExtResource("2_player")
+position = Vector3(0, 0, 0)
 
-[node name="Level" type="Node3D" parent="."]
-script = ExtResource("2_lvl")
+[node name="Level" type="Node3D" parent="Game"]
+scene = ExtResource("3_level")
 
-[node name="UI" type="CanvasLayer" parent="."]
-script = ExtResource("3_ui")
-
-[node name="AudioManager" type="Node" parent="."]
-script = ExtResource("4_au")
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-shader_overrides/ambient_light_color="&h1a1a2e"
-shader_overrides/ambient_light_intensity=0.4
-shader_overrides/fog_enabled=true
-shader_overrides/fog_density=0.015
-shader_overrides/fog_light_color="&h1a1a2e"
-shader_overrides/fog_light_energy=0.0
-shader_overrides/tone_mapping=3
+[node name="UI" type="Node3D" parent="Game"]
+scene = ExtResource("4_ui")

@@ -1,70 +1,84 @@
-## Stalker entity. Teleports when player looks away, always behind player.
-extends Node3D
+## Stalker entity with stealth behavior
+extends "res://scripts/entity.gd"
 
-var detection_range: float = 25.0
-var chase_speed: float = 5.0
-var attack_damage: float = 8.0
-var attack_cooldown: float = 1.5
+# Stalker properties
+@export var detection_range: float = 6.0
+@export var attack_range: float = 2.0
+@export var attack_cooldown: float = 4.0
+@export var attack_damage: int = 20
+@export var speed: float = 2.0
 
-var teleport_timer: float = 0.0
-var teleport_interval: float = 5.0
+# AI state
 var attack_timer: float = 0.0
-var flicker_timer: float = 0.0
-var player: Node3D
+var is_attacking: bool = false
+var is_hiding: bool = false
 
-func _ready() -> void:
-	teleport_timer = randf() * teleport_interval
-	$FlickerLight.light_energy = 0.0
-	player = get_tree().get_first_node_in_group("player")
+func setup_ai() -> void:
+	# Setup stalker AI behavior
+	print("Stalker AI initialized")
 
-func _process(delta: float) -> void:
-	if not player:
+func update_ai(delta: float) -> void:
+	# Stalker AI behavior
+	if not is_alive:
 		return
 	
-	var dist = global_position.distance_to(player.global_position)
-	var dir_to_player = (player.global_position - global_position).normalized()
+	# Update attack timer
+	if attack_timer > 0:
+		attack_timer -= delta
 	
-	# Check if player is looking away
-	var player_forward = player.global_transform.basis.z
-	var dot = player_forward.dot(-dir_to_player)
+	# Check if player is in range
+	var player_distance = global_position.distance_to(player.global_position)
 	
-	teleport_timer += delta
-	
-	if dot < 0 and teleport_timer >= teleport_interval:
-		_teleport_behind_player(player)
-		teleport_timer = 0.0
-		_flicker()
-	
-	# Flicker effect
-	if flicker_timer > 0:
-		flicker_timer -= delta
-		$FlickerLight.light_energy = randf() * 2.0
+	if player_distance < detection_range:
+		# Move toward player slowly
+		var direction = (player.global_position - global_position).normalized()
+		velocity = direction * speed
+		
+		# Rotate to face player
+		look_at(player.global_position, Vector3.UP)
+		
+		# Hide if player is too close
+		if player_distance < attack_range * 0.5:
+			hide_in_shadows()
+		
+		# Attack if in range and cooldown is over
+		if player_distance < attack_range and attack_timer <= 0:
+			attack_player()
 	else:
-		$FlickerLight.light_energy = 0.0
-	
-	if dist <= detection_range * 0.5 and not is_on_floor():
-		_move_toward_player(delta)
-	elif dist <= detection_range * 0.3:
-		_attack_player(delta)
-	
-	# Face player
-	look_at(player.global_position, Vector3.UP)
+		# Idle behavior
+		velocity = Vector3.ZERO
 
-func _teleport_behind_player(player: Node3D) -> void:
-	var behind_pos = player.global_position - player.global_transform.basis.z * 3.0
-	behind_pos.y = global_position.y
-	global_position = behind_pos
+func hide_in_shadows() -> void:
+	# Hide in shadows or avoid detection
+	if not is_hiding:
+		is_hiding = true
+		# This would implement hiding behavior
+		# For now just a placeholder
+		print("Stalker hiding in shadows")
 
-func _move_toward_player(delta: float) -> void:
-	var dir = (player.global_position - global_position).normalized()
-	position += dir * chase_speed * delta
+func attack_player() -> void:
+	# Attack the player
+	if game_controller and not is_attacking:
+		is_attacking = true
+		attack_timer = attack_cooldown
+		
+		# Damage player
+		game_controller.damage_player(attack_damage)
+		
+		# Reset attack state
+		is_attacking = false
 
-func _attack_player(delta: float) -> void:
-	attack_timer += delta
-	if attack_timer >= attack_cooldown:
-		GameController.lose_sanity(attack_damage)
-		attack_timer = 0.0
+func _on_player_detected(player: Node3D) -> void:
+	# Handle player detection
+	print("Stalker detected player")
 
-func _flicker() -> void:
-	$FlickerLight.light_energy = 2.0
-	flicker_timer = 0.5
+func _on_player_attacked(player: Node3D) -> void:
+	# Handle player attack
+	print("Stalker attacked player")
+
+func _on_player_in_range(player: Node3D) -> void:
+	# Handle player in range
+	print("Stalker player in range")
+
+# Signals
+signal stalker_attack

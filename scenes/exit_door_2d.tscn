@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://exitdoor2d"]
+
+[ext_resource type="Script" path="res://scripts/exit_door_2d.gd" id="1_ed"]
+[ext_resource type="Texture2D" path="res://assets/textures/exit_door.png" id="2_door_texture"]
+
+[node name="ExitDoor" type="Node2D"]
+script = ExtResource("1_ed")
+
+[node name="Sprite" type="Sprite2D"]
+parent = "ExitDoor"
+texture = ExtResource("2_door_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="Trigger" type="Area2D" parent="ExitDoor"]
+script = ExtResource("1_ed")
