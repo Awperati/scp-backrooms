@@ -1,0 +1,10 @@
+{
+  "name": "scp-backrooms",
+  "version": "0.1.0",
+  "description": "SCP Backrooms horror game",
+  "scripts": {
+    "build": "echo 'Godot project - no build script needed'",
+    "test": "echo 'No tests yet'",
+    "typecheck": "echo 'No TypeScript'"
+  }
+}
