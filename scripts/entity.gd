@@ -1,4 +1,6 @@
-extends CharacterBody3D
+extends Node2D
+
+# Base entity class for SCP Backrooms game
 
 # Entity properties
 @export var entity_type: String = "ANOMALOUS"
@@ -11,11 +13,9 @@ extends CharacterBody3D
 
 # Game state
 var is_active: bool = true
-var player: Node3D = null
+var player: Node2D = null
 var game_controller: Node = null
-
-# Movement
-var velocity: Vector3 = Vector3.ZERO
+var velocity: Vector2 = Vector2.ZERO
 
 func _ready():
 	# Initialize the entity
@@ -53,3 +53,11 @@ func get_health_percentage():
 
 func set_active(active: bool):
 	is_active = active
+
+func move_towards(direction: Vector2):
+	velocity = direction * speed
+	position += velocity * 0.1
+	velocity = Vector2.ZERO
+
+func set_player(player_node: Node2D):
+	player = player_node

@@ -1,0 +1,7 @@
+[gd_resource type="SpatialMaterial" version="4.0"]
+
+[ext_resource type="Shader" path="res://assets/shaders/ambient_lighting.shader" id="1_alm"]
+
+[resource]
+shader = ExtResource("1_alm")
+render_priority = 1

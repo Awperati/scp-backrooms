@@ -1,78 +1,96 @@
-## Main player controller. Ties movement, camera, flashlight, sanity together.
-extends Node3D
+extends "res://scripts/entity.gd"
 
-@export var walk_speed: float = 4.0
-@export var sprint_speed: float = 8.0
-@export var jump_velocity: float = 4.5
-
-var is_sprinting: bool = false
-var flashlight_on: bool = true
-var sanity_visible: bool = true
-var footstep_timer: float = 0.0
-var footstep_interval: float = 0.5
-
-var player_movement: Node
-var player_camera: Node
-var player_flashlight: Node
-var sanity_system: Node
-
-func _ready() -> void:
-	add_to_group("player")
+func _ready():
+	super._ready()
 	
-	player_movement = $Body.get_node("PlayerMovement")
-	player_camera = $Body.get_node("PlayerCamera")
-	player_flashlight = $Body.get_node("PlayerFlashlight")
-	sanity_system = $Body.get_node("SanitySystem")
+	# Player specific setup
+	health = 100
+	max_health = 100
+	sanity = 100
+	max_sanity = 100
+	speed = 3.0
+	is_stunned = false
+	is_dizzy = false
 	
-	player_movement.walk_speed = walk_speed
-	player_movement.sprint_speed = sprint_speed
-	player_movement.jump_velocity = jump_velocity
+	# Set up collision shape for player
+	var collision_shape = CollisionShape2D.new()
+	collision_shape.shape = RectangleShape2D.new()
+	collision_shape.shape.size = Vector2(0.5, 0.5)
+	add_child(collision_shape)
 	
-	if player_flashlight:
-		player_flashlight.flashlight_on = flashlight_on
-		player_flashlight.enabled = true
+	# Set up sprite for player
+	var sprite = Sprite2D.new()
+	sprite.texture = preload("res://assets/textures/entity_texture.png")
+	sprite.centered = false
+	add_child(sprite)
 	
-	# Position at spawn point in level
-	var game = get_node("/root/Game")
-	if game:
-		var spawn = game.get_node("Level/PlayerSpawn")
-		if spawn:
-			global_position = spawn.global_position
+	# Connect to input
+	connect("input", self, "handle_input")
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey:
-		if event.pressed:
-			if event.keycode == KEY_F:
-				flashlight_on = !flashlight_on
-				if player_flashlight:
-					player_flashlight.flashlight_on = flashlight_on
-			if event.keycode == KEY_ESCAPE:
-				get_viewport().set_input_as_handled()
-
-func _process(delta: float) -> void:
-	is_sprinting = Input.is_key_pressed(KEY_SHIFT)
-	player_movement.is_sprinting = is_sprinting
+func handle_input(delta):
+	# Handle player movement
+	var direction = Vector2.ZERO
 	
-	# Footstep sounds
-	if is_on_floor():
-		var speed = linear_speed
-		if speed > 0.5:
-			footstep_timer += delta
-			if footstep_timer >= footstep_interval:
-				footstep_timer = 0.0
-				_play_footstep()
+	if Input.is_action_pressed("ui_right"):
+		direction.x += 1
+	if Input.is_action_pressed("ui_left"):
+		direction.x -= 1
+	if Input.is_action_pressed("ui_down"):
+		direction.y += 1
+	if Input.is_action_pressed("ui_up"):
+		direction.y -= 1
+	
+	# Normalize direction to prevent faster diagonal movement
+	if direction.length() > 0:
+		direction = direction.normalized()
+	
+	# Apply movement
+	velocity = direction * speed
+	
+	# Apply velocity
+	position += velocity * delta
+	
+	# Reset velocity
+	velocity = Vector2.ZERO
 
-func _play_footstep() -> void:
-	var variant = randi() % 4 + 1
-	var audio = $Body/FootstepSound
-	if audio and audio.stream:
-		audio.play()
+func take_damage(damage):
+	health -= damage
+	if health <= 0:
+		queue_free()
+		emit_signal("player_died")
 
-func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		apply_gravity()
-	player_movement.move(delta)
+func apply_flicker_effect(duration):
+	# Apply flicker effect to player
+	emit_signal("flicker_effect", duration)
 
-func _on_sanity_changed(value: float) -> void:
-	if sanity_system:
-		sanity_system.current_sanity = value
+func apply_mental_effect(duration):
+	# Apply mental effect to player
+	emit_signal("mental_effect", duration)
+
+func stun(duration):
+	# Stun player temporarily
+	is_stunned = true
+	yield(get_tree().create_timer(duration), "timeout")
+	is_stunned = false
+
+func dizzy(duration):
+	# Make player dizzy temporarily
+	is_dizzy = true
+	yield(get_tree().create_timer(duration), "timeout")
+	is_dizzy = false
+
+func collect_data_drive():
+	# Collect a data drive
+	emit_signal("data_drive_collected")
+
+func unlock_door():
+	# Unlock the exit door
+	emit_signal("door_unlocked")
+
+func open_door():
+	# Open the exit door
+	emit_signal("door_opened")
+
+func close_door():
+	# Close the exit door
+	emit_signal("door_closed")

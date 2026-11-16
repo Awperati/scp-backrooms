@@ -1,45 +1,106 @@
 extends "res://scripts/entity.gd"
 
-@export var detection_range: float = 10.0
-@export var attack_range: float = 3.0
-@export var damage: float = 30.0
-
 func _ready():
 	super._ready()
-	entity_type = "WATCHER"
-	health = 100
-	max_health = 100
-	speed = 1.0
-	detection_range = 10.0
-	attack_range = 3.0
-	damage = 30.0
+	
+	# Watcher specific setup
+	ai_state = "watching"
+	aggression = 0.2
+	speed = 0.8
+	health = 15
+	attacking = false
+	
+	# Set up collision shape for watcher
+	var collision_shape = CollisionShape2D.new()
+	collision_shape.shape = RectangleShape2D.new()
+	collision_shape.shape.size = Vector2(1, 1)
+	add_child(collision_shape)
+	
+	# Set up sprite for watcher
+	var sprite = Sprite2D.new()
+	sprite.texture = preload("res://assets/textures/entity_texture.png")
+	sprite.centered = false
+	add_child(sprite)
+	
+	# Start watching
+	watch()
 
-func _process(delta):
-	if not is_active:
-		return
+func watch():
+	# Watcher stays still and watches for player
+	while true:
+		# Wait in place
+		yield(get_tree().create_timer(1.0), "timeout")
 		
-	if player == null:
-		player = get_tree().get_nodes_in_group("player")[0] as Node3D
-		
-	# Check if player is in detection range
-	var distance_to_player = position.distance_to(player.position)
-	
-	if distance_to_player <= detection_range:
-		# Face player
-		var direction = (player.position - position).normalized()
-		look_at(player.position, Vector3.UP)
-		
-		# Move towards player if not in attack range
-		if distance_to_player > attack_range:
-			velocity = direction * speed
-			move_and_slide()
+		# Check if player is visible
+		if player and is_player_visible():
+			# Start attacking
+			ai_state = "attacking"
+			attacking = true
+			attack()
+		elif player and position.distance_to(player.position) < 5:
+			# Start chasing
+			ai_state = "chasing"
+			chase_player()
+
+func chase_player():
+	# Watcher chases player when close
+	while ai_state == "chasing":
+		if player:
+			var direction = (player.position - position).normalized()
+			
+			# Move slowly
+			velocity = direction * speed * 0.5
+			
+			# Check if close to player
+			if position.distance_to(player.position) < 2:
+				ai_state = "attacking"
+				attacking = true
+				attack()
+			
+			yield(get_tree().create_timer(0.1), "timeout")
 		else:
-			# Attack player
-			attack_player()
+			yield(get_tree().create_timer(0.1), "timeout")
+
+func attack():
+	# Watcher attacks with special effect
+	while attacking:
+		if player:
+			var direction = (player.position - position).normalized()
+			
+			# Slowly move towards player
+			velocity = direction * speed
+			
+			# Check if close to player
+			if position.distance_to(player.position) < 1:
+				# Attack player
+				player.take_damage(3)
+				velocity = Vector2.ZERO
+				
+				# Apply visual effect
+				player.apply_flicker_effect(0.5)
+			
+			# Move towards player
+			velocity = direction * speed
+			
+			yield(get_tree().create_timer(0.1), "timeout")
+		else:
+			yield(get_tree().create_timer(0.1), "timeout")
+
+func is_player_visible():
+	# Simple visibility check
+	if not player:
+		return false
 	
-func attack_player():
-	# Damage player when in attack range
-	if player != null:
-		var player_controller = player.get_script()
-		if player_controller != null:
-			player_controller.take_damage(damage)
+	# Check distance
+	var distance = position.distance_to(player.position)
+	if distance > 10:
+		return false
+	
+	# Simple line-of-sight check (would be more complex in full implementation)
+	return true
+
+func take_damage(damage):
+	health -= damage
+	if health <= 0:
+		queue_free()
+		emit_signal("entity_destroyed")

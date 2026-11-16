@@ -1,45 +1,91 @@
 extends "res://scripts/entity.gd"
 
-@export var detection_range: float = 6.0
-@export var attack_range: float = 2.0
-@export var damage: float = 20.0
-
 func _ready():
 	super._ready()
-	entity_type = "STALKER"
-	health = 100
-	max_health = 100
-	speed = 2.0
-	detection_range = 6.0
-	attack_range = 2.0
-	damage = 20.0
+	
+	# Stalker specific setup
+	ai_state = "hiding"
+	aggression = 0.5
+	speed = 1.0
+	health = 25
+	attacking = false
+	
+	# Set up collision shape for stalker
+	var collision_shape = CollisionShape2D.new()
+	collision_shape.shape = RectangleShape2D.new()
+	collision_shape.shape.size = Vector2(1, 1)
+	add_child(collision_shape)
+	
+	# Set up sprite for stalker
+	var sprite = Sprite2D.new()
+	sprite.texture = preload("res://assets/textures/entity_texture.png")
+	sprite.centered = false
+	add_child(sprite)
+	
+	# Start hiding
+	hide()
 
-func _process(delta):
-	if not is_active:
-		return
+func hide():
+	# Stalker hides and waits for player to get close
+	while true:
+		# Wait in hiding spot
+		yield(get_tree().create_timer(2.0), "timeout")
 		
-	if player == null:
-		player = get_tree().get_nodes_in_group("player")[0] as Node3D
-		
-	# Check if player is in detection range
-	var distance_to_player = position.distance_to(player.position)
-	
-	if distance_to_player <= detection_range:
-		# Face player
-		var direction = (player.position - position).normalized()
-		look_at(player.position, Vector3.UP)
-		
-		# Move towards player if not in attack range
-		if distance_to_player > attack_range:
-			velocity = direction * speed
-			move_and_slide()
+		# Check if player is close
+		if player and position.distance_to(player.position) < 8:
+			ai_state = "attacking"
+			attacking = true
+			# Start attacking
+			attack()
+		elif player:
+			# Move closer to player
+			ai_state = "chasing"
+			chase_player()
+
+func chase_player():
+	# Stalker chases player with stealth
+	while ai_state == "chasing":
+		if player:
+			var direction = (player.position - position).normalized()
+			
+			# Move stealthily
+			velocity = direction * speed * 0.7
+			
+			# Check if close to player
+			if position.distance_to(player.position) < 2:
+				ai_state = "attacking"
+				attacking = true
+				attack()
+			
+			yield(get_tree().create_timer(0.1), "timeout")
 		else:
-			# Attack player
-			attack_player()
-	
-func attack_player():
-	# Damage player when in attack range
-	if player != null:
-		var player_controller = player.get_script()
-		if player_controller != null:
-			player_controller.take_damage(damage)
+			yield(get_tree().create_timer(0.1), "timeout")
+
+func attack():
+	# Stalker attacks with stealth
+	while attacking:
+		if player:
+			var direction = (player.position - position).normalized()
+			velocity = direction * speed * 1.2
+			
+			# Check if close to player
+			if position.distance_to(player.position) < 1.5:
+				# Attack player
+				player.take_damage(8)
+				velocity = Vector2.ZERO
+				
+				# Make player dizzy
+				player.dizzy(2.0)
+			
+			# Move towards player
+			velocity = direction * speed
+			
+			yield(get_tree().create_timer(0.1), "timeout")
+		else:
+			yield(get_tree().create_timer(0.1), "timeout")
+
+func take_damage(damage):
+	health -= damage
+	if health <= 0:
+		queue_free()
+		emit_signal("entity_destroyed")

@@ -1,29 +1,49 @@
-extends Node3D
-
-# Data drive properties
-@export var drive_id: String = "drive_001"
-@export var collected: bool = false
-
-# Game references
-var game_controller: Node = null
+extends "res://scripts/entity.gd"
 
 func _ready():
-	# Setup data drive
-	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
+	super._ready()
+	
+	# Data drive specific setup
+	health = 100
+	is_collected = false
+	
+	# Set up collision shape for data drive
+	var collision_shape = CollisionShape2D.new()
+	collision_shape.shape = RectangleShape2D.new()
+	collision_shape.shape.size = Vector2(0.5, 0.5)
+	add_child(collision_shape)
+	
+	# Set up sprite for data drive
+	var sprite = Sprite2D.new()
+	sprite.texture = preload("res://assets/textures/entity_texture.png")
+	sprite.centered = false
+	add_child(sprite)
+	
+	# Connect to player collision
+	connect("body_entered", self, "on_player_entered")
+	connect("body_exited", self, "on_player_exited")
 
-func _process(delta):
-	# Check if player is near
-	if not collected:
-		var player_nodes = get_tree().get_nodes_in_group("player")
-		if player_nodes.size() > 0:
-			var player = player_nodes[0] as Node3D
-			if player != null:
-				var distance = position.distance_to(player.position)
-				if distance < 2.0:
-					# Collect the drive
-					collected = true
-					if game_controller != null:
-						game_controller.collect_drive()
-					
-					# Remove the drive from the scene
-					queue_free()
+func on_player_entered(body):
+	# Check if player collected the drive
+	if body.is_in_group("player"):
+		# Collect data drive
+		if not is_collected:
+			is_collected = true
+			emit_signal("data_drive_collected", self)
+			# Remove the object
+			queue_free()
+
+func on_player_exited(body):
+	# No action needed
+	pass
+
+func take_damage(damage):
+	# Data drives don't take damage
+	pass
+
+func collect():
+	# Collect the data drive
+	if not is_collected:
+		is_collected = true
+		emit_signal("data_drive_collected", self)
+		queue_free()

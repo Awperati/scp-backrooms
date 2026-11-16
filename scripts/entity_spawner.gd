@@ -1,62 +1,60 @@
 extends Node
 
-# Spawning configuration
-@export var spawn_rate: float = 5.0  # seconds between spawns
-@export var max_entities: int = 10
-@export var spawn_radius: float = 10.0
+# Entity spawner for the SCP Backrooms game
 
-# Internal variables
-var spawn_timer: float = 0.0
-var game_controller: Node = null
+# Configuration
+var spawn_positions = []
+var entity_types = ["smiler", "hound", "stalker", "watcher", "whisperer"]
+var max_entities = 10
+var current_entities = 0
 
-# Entity types and their prefabs
-var entity_prefabs = {
-	"SMILER": preload("res://scenes/entities/entity_smiler.tscn"),
-	"HOUND": preload("res://scenes/entities/entity_hound.tscn"),
-	"STALKER": preload("res://scenes/entities/entity_stalker.tscn"),
-	"WATCHER": preload("res://scenes/entities/entity_watcher.tscn"),
-	"WHISPERER": preload("res://scenes/entities/entity_whisperer.tscn")
-}
+func _ready():
+	# Initialize spawn positions
+	# This would normally be set from level data
+	spawn_positions = [
+		Vector2(5, 5),
+		Vector2(10, 10),
+		Vector2(15, 5),
+		Vector2(5, 15),
+		Vector2(15, 15)
+	]
 
-func initialize():
-	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
-
-func update(delta):
-	if game_controller == null:
-		return
-		
-	if game_controller.game_state != "PLAYING":
-		return
-		
-	spawn_timer += delta
-	if spawn_timer >= spawn_rate and entities.size() < max_entities:
-		spawn_entity()
-		spawn_timer = 0.0
-
-func spawn_entity():
-	var entity_type = get_random_entity_type()
-	var entity_scene = entity_prefabs[entity_type]
+func spawn_entity(entity_type, position):
+	# Spawn an entity of the specified type at the given position
+	if current_entities >= max_entities:
+		return null
 	
-	if entity_scene != null:
-		var entity_instance = entity_scene.instantiate()
-		entity_instance.position = get_spawn_position()
-		entity_instance.entity_type = entity_type
-		
-		# Add to scene
-		add_child(entity_instance)
-		
-		# Add to game controller
-		if game_controller != null:
-			game_controller.add_entity(entity_instance)
+	# Load the entity scene
+	var entity_scene = preload("res://scenes/entities/entity_" + entity_type + ".tscn")
+	
+	# Instance the scene
+	var entity = entity_scene.instantiate()
+	entity.position = position
+	
+	# Add to scene
+	add_child(entity)
+	
+	# Increment entity count
+	current_entities += 1
+	
+	# Connect to entity destruction signal
+	entity.connect("entity_destroyed", self, "on_entity_destroyed")
+	
+	return entity
 
-func get_random_entity_type():
-	var types = entity_prefabs.keys()
-	return types[randi() % types.size()]
+func spawn_random_entity(position):
+	# Spawn a random entity type at the given position
+	var entity_type = entity_types[randi() % entity_types.size()]
+	return spawn_entity(entity_type, position)
 
-func get_spawn_position():
-	# Spawn at a random position within spawn radius
-	var angle = randf() * 2 * PI
-	var radius = randf() * spawn_radius
-	var x = cos(angle) * radius
-	var z = sin(angle) * radius
-	return Vector3(x, 0, z)
+func on_entity_destroyed(entity):
+	# Handle entity destruction
+	current_entities -= 1
+
+func spawn_entities_in_radius(center, radius, count):
+	# Spawn multiple entities within a radius
+	for i in range(count):
+		var angle = randf() * 2 * PI
+		var distance = randf() * radius
+		var spawn_pos = center + Vector2(cos(angle) * distance, sin(angle) * distance)
+		spawn_random_entity(spawn_pos)

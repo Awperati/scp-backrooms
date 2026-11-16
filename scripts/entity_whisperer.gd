@@ -1,45 +1,93 @@
 extends "res://scripts/entity.gd"
 
-@export var detection_range: float = 7.0
-@export var attack_range: float = 2.5
-@export var damage: float = 25.0
-
 func _ready():
 	super._ready()
-	entity_type = "WHISPERER"
-	health = 100
-	max_health = 100
-	speed = 1.8
-	detection_range = 7.0
-	attack_range = 2.5
-	damage = 25.0
+	
+	# Whisperer specific setup
+	ai_state = "whispering"
+	aggression = 0.4
+	speed = 1.2
+	health = 20
+	attacking = false
+	
+	# Set up collision shape for whisperer
+	var collision_shape = CollisionShape2D.new()
+	collision_shape.shape = RectangleShape2D.new()
+	collision_shape.shape.size = Vector2(1, 1)
+	add_child(collision_shape)
+	
+	# Set up sprite for whisperer
+	var sprite = Sprite2D.new()
+	sprite.texture = preload("res://assets/textures/entity_texture.png")
+	sprite.centered = false
+	add_child(sprite)
+	
+	# Start whispering
+	whisper()
 
-func _process(delta):
-	if not is_active:
-		return
+func whisper():
+	# Whisperer whispers to player and waits for reaction
+	while true:
+		# Wait and whisper
+		yield(get_tree().create_timer(3.0), "timeout")
 		
-	if player == null:
-		player = get_tree().get_nodes_in_group("player")[0] as Node3D
-		
-	# Check if player is in detection range
-	var distance_to_player = position.distance_to(player.position)
-	
-	if distance_to_player <= detection_range:
-		# Face player
-		var direction = (player.position - position).normalized()
-		look_at(player.position, Vector3.UP)
-		
-		# Move towards player if not in attack range
-		if distance_to_player > attack_range:
-			velocity = direction * speed
-			move_and_slide()
+		# Check if player is close enough to hear
+		if player and position.distance_to(player.position) < 7:
+			# Start attacking
+			ai_state = "attacking"
+			attacking = true
+			attack()
+		elif player:
+			# Move closer to player
+			ai_state = "chasing"
+			chase_player()
+
+func chase_player():
+	# Whisperer chases player when close
+	while ai_state == "chasing":
+		if player:
+			var direction = (player.position - position).normalized()
+			
+			# Move
+			velocity = direction * speed * 0.8
+			
+			# Check if close to player
+			if position.distance_to(player.position) < 2:
+				ai_state = "attacking"
+				attacking = true
+				attack()
+			
+			yield(get_tree().create_timer(0.1), "timeout")
 		else:
-			# Attack player
-			attack_player()
-	
-func attack_player():
-	# Damage player when in attack range
-	if player != null:
-		var player_controller = player.get_script()
-		if player_controller != null:
-			player_controller.take_damage(damage)
+			yield(get_tree().create_timer(0.1), "timeout")
+
+func attack():
+	# Whisperer attacks with special effect
+	while attacking:
+		if player:
+			var direction = (player.position - position).normalized()
+			
+			# Move towards player
+			velocity = direction * speed
+			
+			# Check if close to player
+			if position.distance_to(player.position) < 1.5:
+				# Attack player
+				player.take_damage(6)
+				velocity = Vector2.ZERO
+				
+				# Apply mental effect
+				player.apply_mental_effect(1.0)
+			
+			# Move towards player
+			velocity = direction * speed
+			
+			yield(get_tree().create_timer(0.1), "timeout")
+		else:
+			yield(get_tree().create_timer(0.1), "timeout")
+
+func take_damage(damage):
+	health -= damage
+	if health <= 0:
+		queue_free()
+		emit_signal("entity_destroyed")

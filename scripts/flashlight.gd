@@ -1,37 +1,58 @@
-extends Node3D
+extends Node2D
 
-# Flashlight configuration
-@export var light_range: float = 10.0
-@export var light_energy: float = 2.0
-@export var battery_level: float = 100.0
+# Flashlight system for the SCP Backrooms game
 
-# References
-var player: Node3D = null
-var light: OmniLight3D = null
-var game_controller: Node = null
+var light_enabled = true
+var light_radius = 5.0
+var light_energy = 1.0
+var battery_level = 100.0
+var max_battery = 100.0
 
 func _ready():
-	# Setup flashlight
-	light = $Light
-	player = get_parent()
-	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
+	# Initialize the flashlight
+	$Light2D.enabled = light_enabled
+	$Light2D.radius = light_radius
+	$Light2D.energy = light_energy
 	
-	# Configure light
-	light.range = light_range
-	light.energy = light_energy
+	# Start battery drain
+	set_process(true)
 
 func _process(delta):
-	# Update flashlight with player position
-	if player != null:
-		position = player.position + Vector3(0, 0.5, 0.5)
-	
-	# Consume battery
-	battery_level -= delta * 0.5
-	if battery_level <= 0:
-		battery_level = 0
-		light.energy = 0
-	else:
-		light.energy = light_energy * (battery_level / 100.0)
+	# Drain battery over time
+	if light_enabled:
+		battery_level -= 0.1 * delta
+		battery_level = clamp(battery_level, 0, max_battery)
+		
+		# Update light energy based on battery
+		if battery_level > 0:
+			$Light2D.energy = light_energy * (battery_level / max_battery)
+		else:
+			$Light2D.energy = 0.0
 
-func restore_battery(amount: float):
-	battery_level = min(battery_level + amount, 100.0)
+func toggle_light():
+	# Toggle flashlight on/off
+	light_enabled = !light_enabled
+	$Light2D.enabled = light_enabled
+
+func set_light_radius(radius):
+	# Set flashlight radius
+	light_radius = radius
+	$Light2D.radius = light_radius
+
+func set_light_energy(energy):
+	# Set flashlight energy
+	light_energy = energy
+	$Light2D.energy = light_energy
+
+func charge_battery(amount):
+	# Charge the flashlight battery
+	battery_level += amount
+	battery_level = clamp(battery_level, 0, max_battery)
+
+func get_battery_level():
+	# Get current battery level
+	return battery_level
+
+func is_light_on():
+	# Check if light is on
+	return light_enabled
