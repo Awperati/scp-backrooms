@@ -1,6 +1,25 @@
-[gd_scene load_steps=1 format=3 uid="uid://main000"]
+[gd_scene load_steps=10 format=3 uid="uid://main000"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/title_screen.tscn" id="1_title"]
+[ext_resource type="PackedScene" path="res://scenes/game.tscn" id="2_game"]
+[ext_resource type="PackedScene" path="res://scenes/game_over.tscn" id="3_gameover"]
+[ext_resource type="PackedScene" path="res://scenes/victory.tscn" id="4_victory"]
 
-[node name="Main" type="Node2D"]
-script = ExtResource("1_main")
+[node name="Main" type="Node"]
+# Main scene that manages game flow
+
+[node name="TitleScreen" type="Node" parent="."]
+visible=false
+scene = ExtResource("1_title")
+
+[node name="Game" type="Node" parent="."]
+visible=false
+scene = ExtResource("2_game")
+
+[node name="GameOver" type="Node" parent="."]
+visible=false
+scene = ExtResource("3_gameover")
+
+[node name="Victory" type="Node" parent="."]
+visible=false
+scene = ExtResource("4_victory")

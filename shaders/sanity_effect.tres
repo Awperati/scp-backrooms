@@ -1,0 +1,8 @@
+[gd_resource type="Shader" format=2]
+[ext_resource type="Shader" path="res://shaders/sanity_shader.shader" id="1_sanity"]
+
+[resource]
+shader = ExtResource("1_sanity")
+
+[resource]
+render_priority = 0

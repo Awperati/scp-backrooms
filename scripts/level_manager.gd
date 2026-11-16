@@ -1,91 +1,51 @@
-## Level manager. Handles level transitions, entity spawning, exit checks.
 extends Node3D
 
-var current_level: int = 0
-var data_drives_collected: int = 0
-var level_data: Dictionary = {}
-var level_entities: Array[Node3D] = []
+# Level manager for SCP Backrooms
+# Handles level transitions, data drive collection, and exit logic
 
-func _ready() -> void:
-	_load_level_data()
-	_load_level(current_level)
+@onready var data_drives = []
+@onready var exit_door = null
+@onready var level_name = "Level 0"
+@onready var required_drives = 1
+
+func _ready():
+	# Find all data drives in this level
+	data_drives = get_tree().get_nodes_in_group("data_drive")
+	# Find exit door
+	exit_door = get_node("ExitDoor")
 	
-	# Connect signals
-	GameController.sanity_changed.connect(_on_sanity_changed)
-	GameController.game_over_emitted.connect(_on_game_over)
-
-func _load_level_data() -> void:
-	var file = FileAccess.open("res://data/level_definitions.json", FileAccess.READ)
-	if file:
-		var json = file.get_as_text()
-		file.close()
-		var parsed = JSON.parse_string(json)
-		if parsed:
-			level_data = parsed
-
-func _on_sanity_changed(value: float) -> void:
-	pass
-
-func _on_game_over() -> void:
-	var game_over = load("res://scenes/game_over.tscn").instantiate()
-	get_tree().root.add_child(game_over)
-
-func _load_level(level_index: int) -> void:
-	current_level = level_index
-	data_drives_collected = 0
-	level_entities.clear()
+	# Initialize level
+	print("Level loaded: " + level_name)
 	
-	# Get level info
-	var levels = level_data.get("levels", [])
-	if level_index >= levels.size():
-		return
-	
-	var level_info = levels[level_index]
-	var entities = level_info.get("entities", [])
-	
-	# Spawn entities from level definition
-	for entity_config in entities:
-		var type_name = entity_config.get("type", "")
-		var count = entity_config.get("count", 1)
-		var entity_spawn_points = entity_config.get("spawn_points", [])
-		
-		for i in range(count):
-			_spawn_entity(type_name, entity_spawn_points, i)
+	# Update UI
+	if GameManager.instance:
+		GameManager.instance.update_level_info(level_name, required_drives)
+		GameManager.instance.update_drives_collected(data_drives.size())
 
-func _spawn_entity(type_name: String, spawn_points: Array, index: int) -> void:
-	var entity_scene = load("res://scenes/entities/entity_%s.tscn" % type_name)
-	if entity_scene:
-		var entity = entity_scene.instantiate()
-		
-		# Position at spawn point or random if not specified
-		if spawn_points.size() > 0:
-			var spawn_idx = index % spawn_points.size()
-			var spawn_pos = Vector3(spawn_points[spawn_idx][0], 0, spawn_points[spawn_idx][1])
-			entity.global_position = spawn_pos
-		else:
-			entity.global_position = Vector3(
-				randf_range(-5.0, 5.0),
-				0.0,
-				randf_range(-5.0, 5.0)
-			)
-		
-		level_entities.append(entity)
-		add_child(entity)
-
-func _on_exit_door_triggered(required_drives: int) -> void:
-	if data_drives_collected >= required_drives:
-		_load_next_level()
-
-func _load_next_level() -> void:
-	current_level += 1
-	var levels = level_data.get("levels", [])
+func _process(delta):
+	# Check if all data drives are collected
+	if data_drives.size() > 0:
+		var collected = 0
+		for drive in data_drives:
+			if drive.is_collected:
+				collected += 1
+		# Update UI
+		if GameManager.instance:
+			GameManager.instance.update_drives_collected(collected)
 	
-	if current_level >= levels.size():
-		_show_victory()
-		return
-	
-	_load_level(current_level)
+	# Check exit condition
+	if exit_door and exit_door.is_active():
+		if data_drives.size() > 0:
+			var collected = 0
+			for drive in data_drives:
+				if drive.is_collected:
+					collected += 1
+			if collected >= required_drives:
+				# Player can exit
+				if GameManager.instance:
+					GameManager.instance.complete_level()
 
-func _show_victory() -> void:
-	var victory = load("res://scenes/victory.tscn").instantiate()
-	get_tree().root.add_child(victory)
+func collect_data_drive(drive):
+	# Handle data drive collection
+	if GameManager.instance:
+		GameManager.instance.collect_data_drive()

@@ -1,41 +1,43 @@
-## Audio manager. Handles ambient sounds, footsteps, entity sounds.
 extends Node
 
-var ambient_player: AudioStreamPlayer
-var footstep_players: Array[AudioStreamPlayer] = []
+# Audio manager for SCP Backrooms
+# Handles background music, sound effects, and audio settings
 
-func _ready() -> void:
-	# Create ambient player
-	ambient_player = AudioStreamPlayer.new()
-	ambient_player.stream = load("res://assets/sounds/ambient_hum.wav")
-	ambient_player.loop = true
-	ambient_player.volume_db = -10.0
-	add_child(ambient_player)
-	ambient_player.play()
-	
-	# Create footstep players
-	for i in range(4):
-		var player = AudioStreamPlayer.new()
-		player.stream = load("res://assets/sounds/footstep_%d.wav" % (i + 1))
-		player.bus = "Footsteps"
-		add_child(player)
-		footstep_players.append(player)
+@onready var background_music = $BackgroundMusic
+@onready var sound_effects = $SoundEffects
 
-func play_footstep() -> void:
-	var idx = randi() % footstep_players.size()
-	var player = footstep_players[idx]
-	player.play()
+func _ready():
+	# Initialize audio manager
+	if background_music:
+		background_music.stream = load("res://audio/background_music.wav")
+		background_music.volume_db = -10
+		background_music.play()
 
-func play_entity_sound(sound_type: String) -> void:
-	var path = "res://assets/sounds/entity_%s.wav" % sound_type
-	var stream = load(path)
-	if stream:
-		var player = AudioStreamPlayer.new()
-		player.stream = stream
-		player.one_shot = true
-		add_child(player)
-		player.play()
+func play_sound(sound_path):
+	# Play a sound effect
+	if sound_effects:
+		var sound_player = AudioStreamPlayer.new()
+		sound_player.stream = load(sound_path)
+		sound_player.volume_db = -5
+		add_child(sound_player)
+		sound_player.play()
+		# Clean up after playback
+		sound_player.connect("finished", Callable(sound_player, "queue_free"))
 
-func set_ambient_volume(volume: float) -> void:
-	if ambient_player:
-		ambient_player.volume_db = volume
+func play_background_music(music_path):
+	# Play background music
+	if background_music:
+		background_music.stream = load(music_path)
+		background_music.play()
+
+func set_master_volume(volume):
+	# Set master volume
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), volume)
+
+func set_sfx_volume(volume):
+	# Set sound effects volume
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), volume)
+
+func set_music_volume(volume):
+	# Set music volume
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), volume)
