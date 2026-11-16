@@ -17,6 +17,8 @@ var player_flashlight: Node
 var sanity_system: Node
 
 func _ready() -> void:
+	add_to_group("player")
+	
 	player_movement = $Body.get_node("PlayerMovement")
 	player_camera = $Body.get_node("PlayerCamera")
 	player_flashlight = $Body.get_node("PlayerFlashlight")

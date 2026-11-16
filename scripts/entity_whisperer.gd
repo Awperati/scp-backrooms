@@ -3,13 +3,14 @@ extends Node3D
 
 var detection_range: float = 8.0
 var sanity_drain_rate: float = 2.0
+var player: Node3D
 
 func _ready() -> void:
 	$WhisperSound.stream = load("res://assets/sounds/entity_whisper.wav")
 	$WhisperSound.playing = false
+	player = get_tree().get_first_node_in_group("player")
 
 func _process(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
 	if not player:
 		return
 	

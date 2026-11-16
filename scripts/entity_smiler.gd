@@ -4,6 +4,7 @@ extends Node3D
 var detection_radius: float = 3.0
 var flashlight_off_time: float = 0.0
 var is_visible: bool = false
+var player: Node3D
 
 func _ready() -> void:
 	$Sprite2D.billboard = GeometryInstance3D.BILLBOARD_ENABLED
@@ -12,9 +13,10 @@ func _ready() -> void:
 	$Sprite2D.material_override.emissive = Color.WHITE
 	$Sprite2D.material_override.emissive_multiplier = 2.0
 	visible = false
+	
+	player = get_tree().get_first_node_in_group("player")
 
 func _process(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
 	if not player:
 		return
 	

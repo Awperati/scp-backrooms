@@ -14,6 +14,7 @@ var retreat_timer: float = 0.0
 var patrol_waypoints: Array[Vector3] = []
 var current_patrol_index: int = 0
 var last_seen_position: Vector3 = Vector3.ZERO
+var player: Node3D
 
 func _ready() -> void:
 	# Generate patrol waypoints
@@ -25,9 +26,10 @@ func _ready() -> void:
 		))
 		$EyesLight1.light_energy = 0.5
 		$EyesLight2.light_energy = 0.5
+	
+	player = get_tree().get_first_node_in_group("player")
 
 func _process(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
 	if not player:
 		return
 	
@@ -81,18 +83,10 @@ func _patrol(delta: float) -> void:
 		current_patrol_index = (current_patrol_index + 1) % patrol_waypoints.size()
 
 func _move_toward_player(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
-	if not player:
-		return
-	
 	var dir = (player.global_position - global_position).normalized()
 	position += dir * chase_speed * delta
 
 func _attack_player() -> void:
-	var player = get_node("/root/Game/Player") as Node3D
-	if not player:
-		return
-	
 	var dist = global_position.distance_to(player.global_position)
 	if dist <= detection_radius * 0.3:
 		GameController.lose_sanity(attack_damage)

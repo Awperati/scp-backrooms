@@ -10,12 +10,13 @@ var lose_sight_timeout: float = 6.0
 var attack_timer: float = 0.0
 var lose_sight_timer: float = 0.0
 var is_attacking: bool = false
+var player: Node3D
 
 func _ready() -> void:
 	$EyeLight.light_energy = 0.0
+	player = get_tree().get_first_node_in_group("player")
 
 func _process(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
 	if not player:
 		return
 	
@@ -48,10 +49,6 @@ func _attack_player(delta: float) -> void:
 		attack_timer = 0.0
 
 func _fire_projectile() -> void:
-	var player = get_node("/root/Game/Player") as Node3D
-	if not player:
-		return
-	
 	var projectile = load("res://scenes/projectile.tscn").instantiate()
 	projectile.global_position = $Eye.global_position
 	projectile.target = player

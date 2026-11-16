@@ -10,13 +10,14 @@ var teleport_timer: float = 0.0
 var teleport_interval: float = 5.0
 var attack_timer: float = 0.0
 var flicker_timer: float = 0.0
+var player: Node3D
 
 func _ready() -> void:
 	teleport_timer = randf() * teleport_interval
 	$FlickerLight.light_energy = 0.0
+	player = get_tree().get_first_node_in_group("player")
 
 func _process(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
 	if not player:
 		return
 	
@@ -55,10 +56,6 @@ func _teleport_behind_player(player: Node3D) -> void:
 	global_position = behind_pos
 
 func _move_toward_player(delta: float) -> void:
-	var player = get_node("/root/Game/Player") as Node3D
-	if not player:
-		return
-	
 	var dir = (player.global_position - global_position).normalized()
 	position += dir * chase_speed * delta
 
