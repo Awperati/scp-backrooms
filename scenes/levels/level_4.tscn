@@ -1,0 +1,171 @@
+[gd_scene load_steps=5 format=3 uid="uid://level40"]
+
+[ext_resource type="Script" path="res://scripts/level_manager.gd" id="1_lvl"]
+[ext_resource type="Script" path="res://scripts/data_drive.gd" id="2_dd"]
+[ext_resource type="Script" path="res://scripts/exit_door.gd" id="3_ed"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size="40,0.1,40"
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall"]
+size="40,10,0.1"
+
+[sub_resource type="BoxMesh" id="BoxMesh_pillar"]
+size="2,10,2"
+
+[node name="Level" type="Node3D"]
+script = ExtResource("1_lvl")
+
+[node name="Floor" type="MeshInstance3D" parent="Level"]
+location="0,-0.05,0"
+mesh = SubResource("BoxMesh_floor")
+
+[node name="Ceiling" type="MeshInstance3D" parent="Level"]
+location="0,5,0"
+mesh = SubResource("BoxMesh_floor")
+
+[node name="WallN" type="MeshInstance3D" parent="Level"]
+location="0,5,-20"
+mesh = SubResource("BoxMesh_wall")
+
+[node name="WallS" type="MeshInstance3D" parent="Level"]
+location="0,5,20"
+mesh = SubResource("BoxMesh_wall")
+
+[node name="WallE" type="MeshInstance3D" parent="Level"]
+location="20,5,0"
+mesh = SubResource("BoxMesh_wall")
+
+[node name="WallW" type="MeshInstance3D" parent="Level"]
+location="-20,5,0"
+mesh = SubResource("BoxMesh_wall")
+
+[node name="Pillar1" type="MeshInstance3D" parent="Level"]
+location="12,5,12"
+mesh = SubResource("BoxMesh_pillar")
+
+[node name="Pillar2" type="MeshInstance3D" parent="Level"]
+location="-12,5,-12"
+mesh = SubResource("BoxMesh_pillar")
+
+[node name="Pillar3" type="MeshInstance3D" parent="Level"]
+location="12,5,-12"
+mesh = SubResource("BoxMesh_pillar")
+
+[node name="Pillar4" type="MeshInstance3D" parent="Level"]
+location="-12,5,12"
+mesh = SubResource("BoxMesh_pillar")
+
+[node name="Light1" type="PointLight3D" parent="Level"]
+location="0,4,0"
+light_color="&h808080"
+light_energy=0.5
+light_radius=20
+
+[node name="Light2" type="PointLight3D" parent="Level"]
+location="15,4,15"
+light_color="&h808080"
+light_energy=0.5
+light_radius=15
+
+[node name="DataDrive1" type="StaticBody3D" parent="Level"]
+script = ExtResource("2_dd")
+location="10,0.5,10"
+
+[node name="DataDrive1/Collision" type="CollisionShape3D" parent="Level/DataDrive1"]
+
+[node name="DataDrive1/Mesh" type="MeshInstance3D" parent="Level/DataDrive1"]
+location="0,0.5,0"
+
+[node name="DataDrive1/Light" type="PointLight3D" parent="Level/DataDrive1"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="DataDrive2" type="StaticBody3D" parent="Level"]
+script = ExtResource("2_dd")
+location="-10,0.5,-10"
+
+[node name="DataDrive2/Collision" type="CollisionShape3D" parent="Level/DataDrive2"]
+
+[node name="DataDrive2/Mesh" type="MeshInstance3D" parent="Level/DataDrive2"]
+location="0,0.5,0"
+
+[node name="DataDrive2/Light" type="PointLight3D" parent="Level/DataDrive2"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="DataDrive3" type="StaticBody3D" parent="Level"]
+script = ExtResource("2_dd")
+location="10,0.5,-10"
+
+[node name="DataDrive3/Collision" type="CollisionShape3D" parent="Level/DataDrive3"]
+
+[node name="DataDrive3/Mesh" type="MeshInstance3D" parent="Level/DataDrive3"]
+location="0,0.5,0"
+
+[node name="DataDrive3/Light" type="PointLight3D" parent="Level/DataDrive3"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="DataDrive4" type="StaticBody3D" parent="Level"]
+script = ExtResource("2_dd")
+location="-10,0.5,10"
+
+[node name="DataDrive4/Collision" type="CollisionShape3D" parent="Level/DataDrive4"]
+
+[node name="DataDrive4/Mesh" type="MeshInstance3D" parent="Level/DataDrive4"]
+location="0,0.5,0"
+
+[node name="DataDrive4/Light" type="PointLight3D" parent="Level/DataDrive4"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="DataDrive5" type="StaticBody3D" parent="Level"]
+script = ExtResource("2_dd")
+location="0,0.5,15"
+
+[node name="DataDrive5/Collision" type="CollisionShape3D" parent="Level/DataDrive5"]
+
+[node name="DataDrive5/Mesh" type="MeshInstance3D" parent="Level/DataDrive5"]
+location="0,0.5,0"
+
+[node name="DataDrive5/Light" type="PointLight3D" parent="Level/DataDrive5"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="DataDrive6" type="StaticBody3D" parent="Level"]
+script = ExtResource("2_dd")
+location="0,0.5,-15"
+
+[node name="DataDrive6/Collision" type="CollisionShape3D" parent="Level/DataDrive6"]
+
+[node name="DataDrive6/Mesh" type="MeshInstance3D" parent="Level/DataDrive6"]
+location="0,0.5,0"
+
+[node name="DataDrive6/Light" type="PointLight3D" parent="Level/DataDrive6"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="ExitDoor" type="Node3D" parent="Level"]
+script = ExtResource("3_ed")
+@export required_drives = 6
+location="0,0,20"
+
+[node name="ExitDoor/Trigger" type="Area3D" parent="Level/ExitDoor"]
+
+[node name="ExitDoor/Trigger/Collision" type="CollisionShape3D" parent="Level/ExitDoor/Trigger"]
+
+[node name="ExitDoor/DoorFrame" type="MeshInstance3D" parent="Level/ExitDoor"]
+location="0,1,0"

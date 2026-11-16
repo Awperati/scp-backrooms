@@ -1,0 +1,58 @@
+{
+  "levels": [
+    {
+      "id": 0,
+      "name": "The Lobby",
+      "scene": "res://scenes/level.tscn",
+      "entities": [
+        {"type": "smiler", "count": 2, "spawn_points": [[4,4], [-4,-4]]},
+        {"type": "hound", "count": 1, "spawn_points": [[0,6]]}
+      ],
+      "exit": {"required_drives": 1}
+    },
+    {
+      "id": 1,
+      "name": "The Poolrooms",
+      "scene": "res://scenes/levels/level_1.tscn",
+      "entities": [
+        {"type": "watcher", "count": 1, "spawn_points": [[10,10]]},
+        {"type": "stalker", "count": 1, "spawn_points": [[-8,-8]]},
+        {"type": "whisperer", "count": 2, "spawn_points": [[6,-6], [-6,6]]}
+      ],
+      "exit": {"required_drives": 2}
+    },
+    {
+      "id": 2,
+      "name": "The Library",
+      "scene": "res://scenes/levels/level_2.tscn",
+      "entities": [
+        {"type": "hound", "count": 3, "spawn_points": [[5,8], [-5,-8], [0,0]]},
+        {"type": "stalker", "count": 1, "spawn_points": [[8,0]]}
+      ],
+      "exit": {"required_drives": 3}
+    },
+    {
+      "id": 3,
+      "name": "The Electrical Substation",
+      "scene": "res://scenes/levels/level_3.tscn",
+      "entities": [
+        {"type": "watcher", "count": 2, "spawn_points": [[12,12], [-12,-12]]},
+        {"type": "stalker", "count": 2, "spawn_points": [[0,10], [10,0]]},
+        {"type": "smiler", "count": 1, "spawn_points": [[-8,8]]}
+      ],
+      "exit": {"required_drives": 4}
+    },
+    {
+      "id": 4,
+      "name": "The End",
+      "scene": "res://scenes/levels/level_4.tscn",
+      "entities": [
+        {"type": "smiler", "count": 3, "spawn_points": [[15,15], [-15,-15], [0,20]]},
+        {"type": "hound", "count": 3, "spawn_points": [[10,0], [-10,0], [0,10]]},
+        {"type": "stalker", "count": 2, "spawn_points": [[-15,15], [15,-15]]},
+        {"type": "watcher", "count": 2, "spawn_points": [[20,20], [-20,-20]]}
+      ],
+      "exit": {"required_drives": 6}
+    }
+  ]
+}

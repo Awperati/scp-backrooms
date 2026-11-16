@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://exitdoor"]
+
+[ext_resource type="Script" path="res://scripts/exit_door.gd" id="1_ed"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size="2,2,2"
+
+[node name="ExitDoor" type="Node3D"]
+
+[node name="Trigger" type="Area3D" parent="ExitDoor"]
+script = ExtResource("1_ed")
+
+[node name="Collision" type="CollisionShape3D" parent="ExitDoor/Trigger"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="DoorFrame" type="MeshInstance3D" parent="ExitDoor"]
+rotation_euler="0,0,0"
+location="0,1,0"

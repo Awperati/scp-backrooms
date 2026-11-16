@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://datadrive"]
+
+[ext_resource type="Script" path="res://scripts/data_drive.gd" id="1_dd"]
+[ext_resource type="Script" path="res://scripts/player_flashlight.gd" id="2_flt"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_drive"]
+size="0.4,0.1,0.6"
+
+[sub_resource type="BoxMesh" id="BoxMesh_drive"]
+size="0.4,0.1,0.6"
+
+[node name="DataDrive" type="StaticBody3D"]
+script = ExtResource("1_dd")
+
+[node name="Collision" type="CollisionShape3D" parent="DataDrive"]
+shape = SubResource("BoxShape3D_drive")
+
+[node name="Mesh" type="MeshInstance3D" parent="DataDrive"]
+rotation_euler="0,0,0"
+location="0,0.5,0"
+mesh = SubResource("BoxMesh_drive")
+
+[node name="Light" type="PointLight3D" parent="DataDrive"]
+location="0,0.5,0"
+light_color="&hFFD700"
+light_energy=1.5
+light_radius=4
+
+[node name="PickupSound" type="AudioStreamPlayer3D" parent="DataDrive"]

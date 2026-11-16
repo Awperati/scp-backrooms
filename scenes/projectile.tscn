@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://proj000"]
+
+[ext_resource type="Script" path="res://scripts/projectile.gd" id="1_prj"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_proj"]
+
+[node name="Projectile" type="Area3D"]
+script = ExtResource("1_prj")
+
+[node name="Collision" type="CollisionShape3D" parent="Projectile"]
+shape = SubResource("SphereShape3D_proj")
+
+[node name="Mesh" type="MeshInstance3D" parent="Projectile"]
+mesh = SubResource("SphereShape3D_proj")
+
+[node name="Light" type="PointLight3D" parent="Projectile"]
+light_color="&h00FFFF"
+light_energy=1.0
+light_radius=2

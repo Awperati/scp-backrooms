@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://ceil_mat"]
+
+[resource]
+albedo_color = Color( 0.909804, 0.878431, 0.784314, 1 )
+roughness = 0.7
+metallic = 0.0

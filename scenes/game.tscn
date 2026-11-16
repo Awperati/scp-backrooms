@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://game000"]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_plr"]
+[ext_resource type="PackedScene" path="res://scenes/level.tscn" id="2_lvl"]
+[ext_resource type="PackedScene" path="res://scenes/ui.tscn" id="3_ui"]
+[ext_resource type="Script" path="res://scripts/audio_manager.gd" id="4_au"]
+
+[node name="Game" type="Node3D"]
+
+[node name="Player" type="Node3D" parent="."]
+script = ExtResource("1_plr")
+
+[node name="Level" type="Node3D" parent="."]
+script = ExtResource("2_lvl")
+
+[node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("3_ui")
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource("4_au")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+shader_overrides/ambient_light_color="&h1a1a2e"
+shader_overrides/ambient_light_intensity=0.4
+shader_overrides/fog_enabled=true
+shader_overrides/fog_density=0.015
+shader_overrides/fog_light_color="&h1a1a2e"
+shader_overrides/fog_light_energy=0.0
+shader_overrides/tone_mapping=3

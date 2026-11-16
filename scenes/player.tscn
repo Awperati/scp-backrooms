@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3 uid="uid://player000"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_plr"]
+[ext_resource type="Script" path="res://scripts/player_movement.gd" id="2_mov"]
+[ext_resource type="Script" path="res://scripts/player_camera.gd" id="3_cam"]
+[ext_resource type="Script" path="res://scripts/player_flashlight.gd" id="4_flt"]
+[ext_resource type="Script" path="res://scripts/sanity_system.gd" id="5_sny"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_player"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cam"]
+
+[node name="Player" type="Node3D"]
+script = ExtResource("1_plr")
+
+[node name="Body" type="CharacterBody3D" parent="Player"]
+rotation_euler="0,0,0"
+
+[node name="Collision" type="CollisionShape3D" parent="Body"]
+shape = SubResource("SphereShape3D_player")
+
+[node name="Camera" type="Camera3D" parent="Body"]
+name="MainCamera"
+location="0,1,0"
+
+[node name="Flashlight" type="SpotLight3D" parent="Body/Camera"]
+spot_angle=30
+attenuation=2.0
+energy=3.0
+shadow_enabled=true
+location="0,0,-0.3"
+
+[node name="FootstepSound" type="AudioStreamPlayer3D" parent="Body"]
+
+[node name="PlayerMovement" type="Node3D" parent="Body"]
+script = ExtResource("2_mov")
+
+[node name="PlayerCamera" type="Node3D" parent="Body"]
+script = ExtResource("3_cam")
+
+[node name="PlayerFlashlight" type="Node3D" parent="Body"]
+script = ExtResource("4_flt")
+
+[node name="SanitySystem" type="Node3D" parent="Body"]
+script = ExtResource("5_sny")

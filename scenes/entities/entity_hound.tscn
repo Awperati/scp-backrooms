@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://hound00"]
+
+[ext_resource type="Script" path="res://scripts/entity_hound.gd" id="1_hnd"]
+
+[node name="Hound" type="Node3D"]
+script = ExtResource("1_hnd")
+
+[node name="Body" type="MeshInstance3D" parent="Hound"]
+rotation_euler="0,0,0"
+location="0,0.5,0"
+
+[node name="EyesLight1" type="PointLight3D" parent="Hound"]
+location="-0.2,0.7,0.5"
+light_color="&hFF0000"
+light_energy=0.5
+
+[node name="EyesLight2" type="PointLight3D" parent="Hound"]
+location="0.2,0.7,0.5"
+light_color="&hFF0000"
+light_energy=0.5

@@ -1,0 +1,34 @@
+# Godot
+*.pid
+*.remap
+*.import/
+*.godot/
+*.mono/
+*.pid.log
+
+# Godot 4
+editor/*.tscn
+editor/*.tscn.uid
+editor/*.tres
+editor/*.tres.uid
+export/
+
+# Godot 3
+*.godot
+*.remap
+*.import/
+*.pid
+
+# Mono
+*.cs
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*~
+mono/temp/
+
+# OS
+.DS_Store
+Thumbs.db
