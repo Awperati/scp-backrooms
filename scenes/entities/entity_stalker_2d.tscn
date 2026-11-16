@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://stalker2d"]
+
+[ext_resource type="Script" path="res://scripts/entity_stalker_2d.gd" id="1_stalker_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/stalker_texture.png" id="2_stalker_texture"]
+
+[node name="EntityStalker2D" type="Node2D"]
+script = ExtResource("1_stalker_script")
+visibility_layer = 1
+
+[node name="Sprite2D" type="Sprite2D"]
+parent = "EntityStalker2D"
+texture = ExtResource("2_stalker_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntityStalker2D"]
+shape = RectangleShape2D.new()
+position = Vector2(0, 0)

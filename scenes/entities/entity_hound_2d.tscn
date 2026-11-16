@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://hound2d"]
+
+[ext_resource type="Script" path="res://scripts/entity_hound_2d.gd" id="1_hound_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/hound_texture.png" id="2_hound_texture"]
+
+[node name="EntityHound2D" type="Node2D"]
+script = ExtResource("1_hound_script")
+visibility_layer = 1
+
+[node name="Sprite2D" type="Sprite2D"]
+parent = "EntityHound2D"
+texture = ExtResource("2_hound_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntityHound2D"]
+shape = RectangleShape2D.new()
+position = Vector2(0, 0)

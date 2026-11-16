@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://smiler2d"]
+
+[ext_resource type="Script" path="res://scripts/entity_smiler_2d.gd" id="1_smiler_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/smiler_texture.png" id="2_smiler_texture"]
+
+[node name="EntitySmiler2D" type="Node2D"]
+script = ExtResource("1_smiler_script")
+visibility_layer = 1
+
+[node name="Sprite2D" type="Sprite2D"]
+parent = "EntitySmiler2D"
+texture = ExtResource("2_smiler_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntitySmiler2D"]
+shape = RectangleShape2D.new()
+position = Vector2(0, 0)

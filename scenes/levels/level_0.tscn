@@ -1,84 +1,87 @@
-[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000002"]
+[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000000"]
 
-[ext_resource type="Script" path="res://scripts/level_manager.gd" id="1_lvl"]
-[ext_resource type="Script" path="res://scripts/data_drive.gd" id="2_dd"]
-[ext_resource type="Script" path="res://scripts/exit_door.gd" id="3_ed"]
+[ext_resource type="Script" path="res://scripts/level_manager.gd" id="1_001"]
 
-[node name="Level" type="Node2D"]
-script = ExtResource("1_lvl")
+[node name="Level0" type="Node2D"]
+script = ExtResource("1_001")
 level_name = "Level 0"
 required_drives = 2
 level_index = 0
 
-[node name="Floor" type="Sprite2D" parent="Level"]
-texture = ExtResource("res://assets/textures/floor.png")
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("1_001")
 position = Vector2(0, 0)
-scale = Vector2(1, 1)
-z_index = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+scale = Vector2(2, 2)
 
-[node name="WallN" type="Sprite2D" parent="Level"]
-texture = ExtResource("res://assets/textures/wall.png")
+[node name="DataDrive1" type="Node2D" parent="."]
+script = ExtResource("1_002")
+position = Vector2(5, 5)
+drive_id = "drive_001"
+
+[node name="DataDrive2" type="Node2D" parent="."]
+script = ExtResource("1_002")
+position = Vector2(-5, -5)
+drive_id = "drive_002"
+
+[node name="ExitDoor" type="Node2D" parent="."]
+script = ExtResource("1_003")
+position = Vector2(10, 10)
+door_id = "exit_door_001"
+required_drives = 3
+
+[node name="EntityHound1" type="Node2D" parent="."]
+script = ExtResource("1_004")
+position = Vector2(-5, -5)
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 2.5
+detection_range = 8.0
+attack_range = 1.5
+damage = 25
+
+[node name="EntitySmiler1" type="Node2D" parent="."]
+script = ExtResource("1_005")
 position = Vector2(0, -10)
-scale = Vector2(1, 1)
-z_index = 1
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 1.5
+detection_range = 5.0
+attack_range = 1.0
+damage = 15
 
-[node name="WallS" type="Sprite2D" parent="Level"]
-texture = ExtResource("res://assets/textures/wall.png")
-position = Vector2(0, 10)
-scale = Vector2(1, 1)
-z_index = 1
-
-[node name="WallE" type="Sprite2D" parent="Level"]
-texture = ExtResource("res://assets/textures/wall.png")
+[node name="EntityStalker1" type="Node2D" parent="."]
+script = ExtResource("1_006")
 position = Vector2(10, 0)
-scale = Vector2(1, 1)
-z_index = 1
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 2.0
+detection_range = 6.0
+attack_range = 2.0
+damage = 20
 
-[node name="WallW" type="Sprite2D" parent="Level"]
-texture = ExtResource("res://assets/textures/wall.png")
+[node name="EntityWatcher1" type="Node2D" parent="."]
+script = ExtResource("1_007")
 position = Vector2(-10, 0)
-scale = Vector2(1, 1)
-z_index = 1
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 1.0
+detection_range = 10.0
+attack_range = 3.0
+damage = 30
 
-[node name="DataDrive1" type="Node2D" parent="Level"]
-script = ExtResource("2_dd")
-position = Vector2(6, 6)
-z_index = 2
-
-[node name="DataDrive1/Collision" type="CollisionShape2D" parent="Level/DataDrive1"]
-shape = ExtResource("res://assets/collision/drive_collision.tres")
-
-[node name="DataDrive1/Sprite" type="Sprite2D" parent="Level/DataDrive1"]
-texture = ExtResource("res://assets/textures/drive.png")
-position = Vector2(0, 0)
-z_index = 3
-
-[node name="DataDrive2" type="Node2D" parent="Level"]
-script = ExtResource("2_dd")
-position = Vector2(-6, -6)
-z_index = 2
-
-[node name="DataDrive2/Collision" type="CollisionShape2D" parent="Level/DataDrive2"]
-shape = ExtResource("res://assets/collision/drive_collision.tres")
-
-[node name="DataDrive2/Sprite" type="Sprite2D" parent="Level/DataDrive2"]
-texture = ExtResource("res://assets/textures/drive.png")
-position = Vector2(0, 0)
-z_index = 3
-
-[node name="ExitDoor" type="Node2D" parent="Level"]
-script = ExtResource("3_ed")
-@export required_drives = 2
+[node name="EntityWhisperer1" type="Node2D" parent="."]
+script = ExtResource("1_008")
 position = Vector2(0, 10)
-z_index = 2
-
-[node name="ExitDoor/Trigger" type="Area2D" parent="Level/ExitDoor"]
-position = Vector2(0, 0)
-
-[node name="ExitDoor/Trigger/Collision" type="CollisionShape2D" parent="Level/ExitDoor/Trigger"]
-shape = ExtResource("res://assets/collision/door_collision.tres")
-
-[node name="ExitDoor/DoorFrame" type="Sprite2D" parent="Level/ExitDoor"]
-texture = ExtResource("res://assets/textures/door.png")
-position = Vector2(0, 0)
-z_index = 3
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 1.8
+detection_range = 7.0
+attack_range = 2.5
+damage = 25

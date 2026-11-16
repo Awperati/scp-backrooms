@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://whisperer2d"]
+
+[ext_resource type="Script" path="res://scripts/entity_whisperer_2d.gd" id="1_whisperer_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/whisperer_texture.png" id="2_whisperer_texture"]
+
+[node name="EntityWhisperer2D" type="Node2D"]
+script = ExtResource("1_whisperer_script")
+visibility_layer = 1
+
+[node name="Sprite2D" type="Sprite2D"]
+parent = "EntityWhisperer2D"
+texture = ExtResource("2_whisperer_texture")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntityWhisperer2D"]
+shape = RectangleShape2D.new()
+position = Vector2(0, 0)

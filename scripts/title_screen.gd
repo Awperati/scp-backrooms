@@ -8,4 +8,4 @@ func _ready():
 
 func _on_start_button_pressed():
 	# Start the game
-	TransitionManager.change_scene("res://scenes/levels/level_0.tscn")
+	emit_signal("start_game")

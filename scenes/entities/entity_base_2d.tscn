@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://entitybase2d"]
+
+[node name="EntityBase2D" type="Node2D"]
+visibility_layer = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="EntityBase2D"]
+texture = null
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+material = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntityBase2D"]
+shape = RectangleShape2D.new()
+position = Vector2(0, 0)
