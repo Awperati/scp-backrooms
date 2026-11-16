@@ -1,5 +1,7 @@
 extends Node
 
+signal start_game
+
 func _ready():
 	# Setup title screen
 	var start_button = $StartButton

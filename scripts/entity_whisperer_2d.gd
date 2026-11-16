@@ -34,7 +34,7 @@ func whisper():
 	# Whisperer whispers to player and waits for reaction
 	while true:
 		# Wait and whisper
-		yield(get_tree().create_timer(3.0), "timeout")
+		await get_tree().create_timer(3.0).timeout
 		
 		# Check if player is close enough to hear
 		if player and position.distance_to(player.position) < 7:
@@ -62,9 +62,9 @@ func chase_player():
 				attacking = true
 				attack()
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func attack():
 	# Whisperer attacks with special effect
@@ -87,9 +87,9 @@ func attack():
 			# Move towards player
 			velocity = direction * speed
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func take_damage(damage):
 	health -= damage

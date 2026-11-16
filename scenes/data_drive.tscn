@@ -1,29 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://datadrive"]
+[gd_scene load_steps=1 format=3 uid="uid://datadrive"]
 
-[ext_resource type="Script" path="res://scripts/data_drive.gd" id="1_dd"]
-[ext_resource type="Script" path="res://scripts/player_flashlight.gd" id="2_flt"]
+[ext_resource type="Script" path="res://scripts/data_drive_2d.gd" id="1_dd"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_drive"]
-size="0.4,0.1,0.6"
-
-[sub_resource type="BoxMesh" id="BoxMesh_drive"]
-size="0.4,0.1,0.6"
-
-[node name="DataDrive" type="StaticBody3D"]
+[node name="DataDrive" type="Node2D"]
 script = ExtResource("1_dd")
+position = Vector2(0, 0)
+drive_id = "drive_001"
 
-[node name="Collision" type="CollisionShape3D" parent="DataDrive"]
-shape = SubResource("BoxShape3D_drive")
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("res://assets/textures/data_drive.png")
+centered = true
 
-[node name="Mesh" type="MeshInstance3D" parent="DataDrive"]
-rotation_euler="0,0,0"
-location="0,0.5,0"
-mesh = SubResource("BoxMesh_drive")
-
-[node name="Light" type="PointLight3D" parent="DataDrive"]
-location="0,0.5,0"
-color="&hFFD700"
-energy=1.5
-radius=4
-
-[node name="PickupSound" type="AudioStreamPlayer3D" parent="DataDrive"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = ExtResource("res://scenes/entities/circle_shape2d.tres")

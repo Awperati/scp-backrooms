@@ -1,23 +1,25 @@
-[gd_scene load_steps=5 format=3 uid="uid://hound001"]
+[gd_scene load_steps=6 format=3 uid="uid://hound001"]
 
-[node name="HoundEntity" type="Node3D"]
+[ext_resource type="Script" path="res://scripts/entity_hound.gd" id="1_hound"]
+
+[node name="HoundEntity" type="CharacterBody3D"]
 visibility_layer = 1
+script = ExtResource("1_hound")
+entity_type = "HOUND"
+health = 100.0
+max_health = 100.0
+speed = 3.0
+detection_range = 10.0
+attack_range = 2.0
+damage = 30.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="HoundEntity"]
-mesh = ExtResource("uid://houndmesh001")
-material_override = ExtResource("uid://houndmat001")
-position = Vector3(0, 0, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="HoundEntity"]
-shape = ExtResource("uid://houndcoll001")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1, 0)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="HoundEntity"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 current_animation = "idle"
 
-[node name="HoundAI" type="Node" parent="HoundEntity"]
-script = ExtResource("uid://houndai001")
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="HoundEntity"]
-stream = ExtResource("uid://houndsound001")
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 volume_db = -10.0

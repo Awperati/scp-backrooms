@@ -34,7 +34,7 @@ func hide():
 	# Stalker hides and waits for player to get close
 	while true:
 		# Wait in hiding spot
-		yield(get_tree().create_timer(2.0), "timeout")
+		await get_tree().create_timer(2.0).timeout
 		
 		# Check if player is close
 		if player and position.distance_to(player.position) < 8:
@@ -62,9 +62,9 @@ func chase_player():
 				attacking = true
 				attack()
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func attack():
 	# Stalker attacks with stealth
@@ -85,9 +85,9 @@ func attack():
 			# Move towards player
 			velocity = direction * speed
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func take_damage(damage):
 	health -= damage

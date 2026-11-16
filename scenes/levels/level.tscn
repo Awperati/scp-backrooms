@@ -1,0 +1,30 @@
+[gd_scene load_steps=1 format=3 uid="uid://level001"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("res://scripts/level_manager.gd")
+level_name = "Level"
+required_drives = 2
+level_index = 0
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("res://assets/textures/floor_texture.png")
+position = Vector2(0, 0)
+anchor_right = 1.0
+anchor_bottom = 1.0
+scale = Vector2(2, 2)
+
+[node name="DataDrive1" type="Node2D" parent="."]
+script = ExtResource("res://scripts/data_drive_2d.gd")
+position = Vector2(5, 5)
+drive_id = "drive_001"
+
+[node name="DataDrive2" type="Node2D" parent="."]
+script = ExtResource("res://scripts/data_drive_2d.gd")
+position = Vector2(-5, -5)
+drive_id = "drive_002"
+
+[node name="ExitDoor" type="Node2D" parent="."]
+script = ExtResource("res://scripts/exit_door_2d.gd")
+position = Vector2(10, 10)
+door_id = "exit_door_001"
+required_drives = 3

@@ -1,16 +1,20 @@
-[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000004"]
+[gd_scene load_steps=2 format=3 uid="uid:10000000000000000000000000000004"]
 
 [ext_resource type="Script" path="res://scripts/entity_smiler.gd" id="1_001"]
 
-[node name="EntitySmiler" type="Node2D"]
+[node name="EntitySmiler" type="CharacterBody3D"]
 script = ExtResource("1_001")
-name = "EntitySmiler"
-position = Vector2(0, 0)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 1.5
-detection_range = 5.0
-attack_range = 1.0
-damage = 15
-z_index = 5
+entity_type = "SMILER"
+health = 150.0
+max_health = 150.0
+speed = 3.0
+detection_range = 8.0
+attack_range = 1.5
+damage = 20.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+current_animation = "idle"

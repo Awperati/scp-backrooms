@@ -38,7 +38,7 @@ func patrol():
 		for i in range(10):
 			var direction = Vector2(randf() * 2 - 1, randf() * 2 - 1).normalized()
 			move_towards(direction)
-			yield(get_tree().create_timer(0.5), "timeout")
+			await get_tree().create_timer(0.5).timeout
 			
 			# Check if player is nearby
 			if player and position.distance_to(player.position) < 10:
@@ -48,7 +48,7 @@ func patrol():
 				break
 		
 		# Add a small pause
-		yield(get_tree().create_timer(0.5), "timeout")
+		await get_tree().create_timer(0.5).timeout
 		
 		# Randomly change state
 		if randf() > 0.8:
@@ -73,9 +73,9 @@ func investigate_sound():
 				attacking = false
 				break
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func attack():
 	# Hound attacks with high aggression
@@ -96,9 +96,9 @@ func attack():
 			# Move towards player
 			velocity = direction * speed
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func take_damage(damage):
 	health -= damage

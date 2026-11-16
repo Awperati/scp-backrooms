@@ -1,19 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://entity001"]
+[gd_scene load_steps=1 format=3 uid="uid://entity001"]
 
-[node name="Entity" type="Node3D"]
-visibility_layer = 1
+[node name="Entity" type="Node2D"]
+script = ExtResource("res://scripts/entity_base_2d.gd")
+entity_type = "ANOMALOUS"
+health = 100.0
+max_health = 100.0
+speed = 1.0
+detection_range = 5.0
+attack_range = 1.0
+damage = 10.0
+is_active = true
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Entity"]
-mesh = ExtResource("uid://entitymesh001")
-material_override = ExtResource("uid://entitymat001")
-position = Vector3(0, 0, 0)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = ExtResource("res://scenes/entities/circle_shape2d.tres")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Entity"]
-shape = ExtResource("uid://entitycoll001")
-position = Vector3(0, 1, 0)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Entity"]
-current_animation = "idle"
-
-[node name="EntityAI" type="Node" parent="Entity"]
-script = ExtResource("uid://entityai001")
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("res://assets/textures/entity_texture.png")
+centered = false

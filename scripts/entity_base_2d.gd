@@ -1,142 +1,293 @@
-extends CharacterBody2D
+extends Node2D
 
-# Entity Base Class for 2D version
-# This is the base class for all entities in the SCP Backrooms Game (2D version)
-# It handles basic entity properties, health system, game state management
-# and provides a foundation for inheritance by specific entity types
+# Base Entity Class for SCP Backrooms - 2D version
+# All entity types inherit from this class
 
 # Entity properties
-@export var entity_type: String = "ANOMALOUS"
-@export var health: float = 100.0
-@export var max_health: float = 100.0
-@export var speed: float = 1.0
-@export var detection_range: float = 5.0
-@export var attack_range: float = 1.0
-@export var damage: float = 10.0
-@export var is_active: bool = true
-
-# Game state
-var player: Node2D = null
-var game_controller: Node = null
-var entity_manager: Node = null
+var entity_name: String = "Base Entity"
+var entity_type: String = "base"
+var health: float = 100.0
+var max_health: float = 100.0
+var speed: float = 50.0
+var detection_range: float = 100.0
+var attack_range: float = 50.0
+var attack_damage: float = 25.0
+var attack_cooldown: float = 1.0
+var last_attack_time: float = 0.0
 var is_alive: bool = true
+var is_detected: bool = false
+var is_attacking: bool = false
 
-# Movement
-var velocity: Vector2 = Vector2.ZERO
+# Game references
+var game_manager: Node2D = null
+var entity_manager: Node2D = null
+var entity_interaction_system: Node2D = null
 
-# Damage and health system
-signal health_changed(new_health, max_health)
-signal entity_damaged(amount, new_health)
-signal entity_killed(entity)
+# Animation and visual settings
+@export var animation_speed: float = 1.0
+@export var sprite_scale: Vector2 = Vector2(1.0, 1.0)
+@export var idle_animation: String = "idle"
+@export var walk_animation: String = "walk"
+@export var attack_animation: String = "attack"
+@export var damage_animation: String = "damage"
 
-# Initialization
+# Signals
+signal entity_spawned(entity)
+signal entity_destroyed(entity)
+signal entity_damaged(entity, amount)
+signal entity_attacked(entity, target, damage)
+signal entity_detected(entity, detected)
+signal entity_undetected(entity)
+
 func _ready():
-	# Initialize the entity
-	player = get_tree().get_nodes_in_group("player")[0] if get_tree().get_nodes_in_group("player").size() > 0 else null
-	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
-	entity_manager = get_tree().get_nodes_in_group("entity_manager")[0] if get_tree().get_nodes_in_group("entity_manager").size() > 0 else null
+	# Initialize entity
+	add_to_group("entities")
+	add_to_group(entity_type + "_entity")
 	
-	# Add to entity manager if available
-	if entity_manager != null:
-		entity_manager.add_entity(self)
+	# Setup entity
+	setup_entity()
+
+func setup_entity():
+	# Set initial properties
+	health = max_health
 	
-	# Connect health changed signal
-	connect("health_changed", self, "_on_health_changed")
+	# Emit signal
+	emit_signal("entity_spawned", self)
+
+func set_game_manager(new_game_manager: Node2D):
+	game_manager = new_game_manager
+
+func set_entity_manager(new_entity_manager: Node2D):
+	entity_manager = new_entity_manager
+
+func set_entity_interaction_system(new_interaction_system: Node2D):
+	entity_interaction_system = new_interaction_system
 
 func _process(delta):
-	# Override in child classes for behavior
+	# Update entity behavior
+	update_entity(delta)
+
+func update_entity(delta: float):
+	# Override in child classes for specific behavior
 	pass
 
-# Health system
+func move_towards(target_position: Vector2, delta: float):
+	# Move towards target position
+	if not is_alive:
+		return
+	
+	var direction = (target_position - position).normalized()
+	
+	# Move
+	position += direction * speed * delta
+
 func take_damage(amount: float):
+	# Take damage
 	if not is_alive:
 		return
 	
 	health -= amount
+	
+	# Emit signal
+	emit_signal("entity_damaged", self, amount)
+	
+	# Check if entity is dead
 	if health <= 0:
 		health = 0
 		is_alive = false
-		emit_signal("entity_damaged", amount, health)
-		emit_signal("entity_killed", self)
-		kill_entity()
-	else:
-		emit_signal("entity_damaged", amount, health)
-		emit_signal("health_changed", health, max_health)
-
-func heal(amount: float):
-	if not is_alive:
-		return
 		
-	health = min(health + amount, max_health)
-	emit_signal("health_changed", health, max_health)
+		# Emit destroy signal
+		emit_signal("entity_destroyed", self)
 
-func set_health(new_health: float):
-	health = clamp(new_health, 0, max_health)
-	emit_signal("health_changed", health, max_health)
-
-func get_health_percentage() -> float:
-	return health / max_health
-
-# Game state management
-func set_active(active: bool):
-	is_active = active
-
-func get_active() -> bool:
-	return is_active
-
-# Entity lifecycle
-func kill_entity():
-	if not is_alive:
+func set_detected(detected: bool):
+	# Set detection state
+	if is_detected == detected:
 		return
 	
-	is_alive = false
+	is_detected = detected
 	
-	# Remove entity from game
-	if entity_manager != null:
-		entity_manager.remove_entity(self)
-	
-	# Remove from scene
-	queue_free()
+	# Emit signal
+	if is_detected:
+		emit_signal("entity_detected", self, detected)
+	else:
+		emit_signal("entity_undetected", self)
 
-# Utility methods
-func get_distance_to_player() -> float:
-	if player == null:
-		return INFINITY
-	return position.distance_to(player.position)
+func get_health() -> float:
+	return health
 
-func is_player_in_range(range: float) -> bool:
-	if player == null:
-		return false
-	return position.distance_to(player.position) <= range
+func get_max_health() -> float:
+	return max_health
 
-func set_entity_type(type: String):
-	entity_type = type
+func set_health(health: float):
+	health = health
+
+func set_max_health(max_health: float):
+	max_health = max_health
+
+func is_alive() -> bool:
+	return is_alive
+
+func is_detected() -> bool:
+	return is_detected
 
 func get_entity_type() -> String:
 	return entity_type
 
-func get_entity_info() -> Dictionary:
+func set_entity_type(type: String):
+	entity_type = type
+
+func get_entity_name() -> String:
+	return entity_name
+
+func set_entity_name(name: String):
+	entity_name = name
+
+func get_speed() -> float:
+	return speed
+
+func set_speed(speed: float):
+	speed = speed
+
+func get_detection_range() -> float:
+	return detection_range
+
+func set_detection_range(range: float):
+	detection_range = range
+
+func get_attack_range() -> float:
+	return attack_range
+
+func set_attack_range(range: float):
+	attack_range = range
+
+func get_attack_damage() -> float:
+	return attack_damage
+
+func set_attack_damage(damage: float):
+	attack_damage = damage
+
+func get_attack_cooldown() -> float:
+	return attack_cooldown
+
+func set_attack_cooldown(cooldown: float):
+	attack_cooldown = cooldown
+
+func get_last_attack_time() -> float:
+	return last_attack_time
+
+func set_last_attack_time(time: float):
+	last_attack_time = time
+
+func get_is_attacking() -> bool:
+	return is_attacking
+
+func set_is_attacking(attacking: bool):
+	is_attacking = attacking
+
+func get_game_manager() -> Node2D:
+	return game_manager
+
+func get_entity_manager() -> Node2D:
+	return entity_manager
+
+func get_entity_interaction_system() -> Node2D:
+	return entity_interaction_system
+
+func set_game_manager_ref(game_manager_ref: Node2D):
+	game_manager = game_manager_ref
+
+func set_entity_manager_ref(entity_manager_ref: Node2D):
+	entity_manager = entity_manager_ref
+
+func set_entity_interaction_system_ref(interaction_system_ref: Node2D):
+	entity_interaction_system = interaction_system_ref
+
+func get_entity_properties() -> Dictionary:
+	# Get entity properties
 	return {
+		"name": entity_name,
 		"type": entity_type,
 		"health": health,
 		"max_health": max_health,
 		"speed": speed,
 		"detection_range": detection_range,
 		"attack_range": attack_range,
-		"damage": damage,
-		"is_active": is_active,
-		"is_alive": is_alive
+		"attack_damage": attack_damage,
+		"attack_cooldown": attack_cooldown
 	}
 
-# Callbacks for child classes to override
-func _on_health_changed(new_health: float, max_health: float):
-	# Override in child classes to handle health changes
-	pass
+func set_entity_properties(properties: Dictionary):
+	# Set entity properties
+	for key in properties.keys():
+		match key:
+			"name":
+				entity_name = properties[key]
+			"type":
+				entity_type = properties[key]
+			"health":
+				health = properties[key]
+			"max_health":
+				max_health = properties[key]
+			"speed":
+				speed = properties[key]
+			"detection_range":
+				detection_range = properties[key]
+			"attack_range":
+				attack_range = properties[key]
+			"attack_damage":
+				attack_damage = properties[key]
+			"attack_cooldown":
+				attack_cooldown = properties[key]
 
-func _on_entity_damaged(amount: float, new_health: float):
-	# Override in child classes to handle damage
-	pass
+func get_entity_settings() -> Dictionary:
+	# Get entity settings
+	return {
+		"animation_speed": animation_speed,
+		"sprite_scale": sprite_scale,
+		"idle_animation": idle_animation,
+		"walk_animation": walk_animation,
+		"attack_animation": attack_animation,
+		"damage_animation": damage_animation
+	}
 
-func _on_entity_killed(entity):
-	# Override in child classes to handle death
-	pass
+func set_entity_settings(settings: Dictionary):
+	# Set entity settings
+	for key in settings.keys():
+		match key:
+			"animation_speed":
+				animation_speed = settings[key]
+			"sprite_scale":
+				sprite_scale = settings[key]
+			"idle_animation":
+				idle_animation = settings[key]
+			"walk_animation":
+				walk_animation = settings[key]
+			"attack_animation":
+				attack_animation = settings[key]
+			"damage_animation":
+				damage_animation = settings[key]
+
+func get_entity_stats() -> Dictionary:
+	# Get entity statistics
+	return {
+		"health": health,
+		"max_health": max_health,
+		"is_alive": is_alive,
+		"is_detected": is_detected,
+		"is_attacking": is_attacking
+	}
+
+func set_entity_stats(stats: Dictionary):
+	# Set entity statistics
+	for key in stats.keys():
+		match key:
+			"health":
+				health = stats[key]
+			"max_health":
+				max_health = stats[key]
+			"is_alive":
+				is_alive = stats[key]
+			"is_detected":
+				is_detected = stats[key]
+			"is_attacking":
+				is_attacking = stats[key]

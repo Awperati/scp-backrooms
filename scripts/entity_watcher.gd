@@ -1,111 +1,110 @@
-extends "res://scripts/entity_base_2d.gd"
+extends "res://scripts/entity_base.gd"
 
-# Watcher-specific behavior
-var ai_state: String = "watching"
-var aggression: float = 0.2
-var attacking: bool = false
+# Watcher Entity for 3D version
+# This class implements the specific behavior for the Watcher entity in 3D
 
+# Entity-specific properties
+@export var patrol_points: Array[Vector3] = []
+@export var current_patrol_index: int = 0
+
+# Animation and visual properties
+@onready var animation_player = $AnimationPlayer
+
+# Initialize the Watcher entity
 func _ready():
+	# Call parent initialization
 	super._ready()
 	
-	# Watcher specific setup
-	ai_state = "watching"
-	aggression = 0.2
-	speed = 0.8
-	health = 15
-	attacking = false
+	# Set entity-specific properties
+	entity_type = "WATCHER"
+	max_health = 250.0
+	health = max_health
+	speed = 2.0
+	detection_range = 15.0
+	attack_range = 3.0
+	damage = 35.0
 	
-	# Set up collision shape for watcher
-	var collision_shape = CollisionShape2D.new()
-	collision_shape.shape = RectangleShape2D.new()
-	collision_shape.shape.size = Vector2(1, 1)
-	add_child(collision_shape)
-	
-	# Set up sprite for watcher
-	var sprite = Sprite2D.new()
-	sprite.texture = preload("res://assets/textures/entity_texture.png")
-	sprite.centered = false
-	add_child(sprite)
-	
-	# Start watching
-	watch()
+	# Initialize patrol points (3D)
+	patrol_points = [
+		Vector3(-100, 0, -100),
+		Vector3(100, 0, -100),
+		Vector3(100, 0, 100),
+		Vector3(-100, 0, 100)
+	]
+	current_patrol_index = 0
 
-func watch():
-	# Watcher stays still and watches for player
-	while true:
-		# Wait in place
-		yield(get_tree().create_timer(1.0), "timeout")
+# Process function for behavior
+func _process(delta):
+	# Call parent process
+	super._process(delta)
+	
+	if player != null and is_alive:
+		var distance_to_player = position.distance_to(player.position)
 		
-		# Check if player is visible
-		if player and is_player_visible():
-			# Start attacking
-			ai_state = "attacking"
-			attacking = true
-			attack()
-		elif player and position.distance_to(player.position) < 5:
-			# Start chasing
-			ai_state = "chasing"
-			chase_player()
-
-func chase_player():
-	# Watcher chases player when close
-	while ai_state == "chasing":
-		if player:
-			var direction = (player.position - position).normalized()
-			
-			# Move slowly
-			velocity = direction * speed * 0.5
-			
-			# Check if close to player
-			if position.distance_to(player.position) < 2:
-				ai_state = "attacking"
-				attacking = true
-				attack()
-			
-			yield(get_tree().create_timer(0.1), "timeout")
+		# If player is close enough to attack, attack
+		if distance_to_player <= attack_range:
+			attack_player(delta)
+		# If player is in detection range, start chasing
+		elif distance_to_player <= detection_range:
+			chase_player(delta)
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			patrol(delta)
+		# Apply movement
+		move_and_slide()
 
-func attack():
-	# Watcher attacks with special effect
-	while attacking:
-		if player:
-			var direction = (player.position - position).normalized()
-			
-			# Slowly move towards player
-			velocity = direction * speed
-			
-			# Check if close to player
-			if position.distance_to(player.position) < 1:
-				# Attack player
-				player.take_damage(3)
-				velocity = Vector2.ZERO
-				
-				# Apply visual effect
-				player.apply_flicker_effect(0.5)
-			
-			# Move towards player
-			velocity = direction * speed
-			
-			yield(get_tree().create_timer(0.1), "timeout")
-		else:
-			yield(get_tree().create_timer(0.1), "timeout")
-
-func is_player_visible():
-	# Simple visibility check
-	if not player:
-		return false
+# Chase the player
+func chase_player(delta):
+	if player == null:
+		return
 	
-	# Check distance
-	var distance = position.distance_to(player.position)
-	if distance > 10:
-		return false
+	var direction = (player.position - position).normalized()
+	velocity = direction * speed
 	
-	# Simple line-of-sight check (would be more complex in full implementation)
-	return true
+	# Rotate to face player (Y-axis rotation for 3D)
+	if direction != Vector3.ZERO:
+		rotation.y = atan2(direction.x, direction.z)
 
-func take_damage(damage):
-	health -= damage
-	if health <= 0:
-		queue_free()
-		emit_signal("entity_destroyed")
+# Patrol around the level
+func patrol(delta):
+	if patrol_points.size() == 0:
+		velocity = Vector3.ZERO
+		return
+	
+	# Move to next patrol point
+	var target_point = patrol_points[current_patrol_index]
+	var direction = (target_point - position).normalized()
+	var distance_to_target = position.distance_to(target_point)
+	
+	velocity = direction * speed * 0.5  # Slower during patrol
+	
+	# Rotate to face direction (Y-axis rotation for 3D)
+	if direction != Vector3.ZERO:
+		rotation.y = atan2(direction.x, direction.z)
+	
+	# If reached target point, move to next
+	if distance_to_target < 2.0:
+		current_patrol_index = (current_patrol_index + 1) % patrol_points.size()
+
+# Attack the player
+func attack_player(delta):
+	if player == null:
+		return
+	
+	velocity = Vector3.ZERO  # Stop moving during attack
+	
+	# Perform attack
+	player.take_damage(damage)
+	
+	# Play attack animation
+	if animation_player.has_animation("attack"):
+		animation_player.play("attack")
+
+# Handle damage
+func _on_health_changed(new_health: float, max_health: float):
+	if animation_player.has_animation("damage"):
+		animation_player.play("damage")
+
+# Handle death
+func _on_entity_killed(entity):
+	if animation_player.has_animation("death"):
+		animation_player.play("death")

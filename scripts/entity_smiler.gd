@@ -1,15 +1,12 @@
-extends "res://scripts/entity_base_2d.gd"
+extends "res://scripts/entity_base.gd"
 
-# Smiler Entity
-# This class implements the specific behavior for the Smiler entity
+# Smiler Entity for 3D version
+# This class implements the specific behavior for the Smiler entity in 3D
 
 # Entity-specific properties
-@export var detection_range: float = 8.0
-@export var attack_range: float = 1.5
-@export var damage: float = 25.0
-@export var speed: float = 2.0
-@export var attack_cooldown: float = 2.0
-@export var last_attack_time: float = 0.0
+@export var patrol_points: Array[Vector3] = []
+@export var current_patrol_index: int = 0
+@export var is_patrolling: bool = true
 
 # Animation and visual properties
 @onready var animation_player = $AnimationPlayer
@@ -21,60 +18,82 @@ func _ready():
 	
 	# Set entity-specific properties
 	entity_type = "SMILER"
-	max_health = 100.0
+	max_health = 150.0
 	health = max_health
-	speed = 2.0
+	speed = 3.0
 	detection_range = 8.0
 	attack_range = 1.5
-	damage = 25.0
+	damage = 20.0
 	
-	# Connect signals
-	connect("entity_damaged", self, "_on_entity_damaged")
-	connect("entity_killed", self, "_on_entity_killed")
+	# Initialize patrol points (3D)
+	patrol_points = [
+		Vector3(-50, 0, -50),
+		Vector3(50, 0, -50),
+		Vector3(50, 0, 50),
+		Vector3(-50, 0, 50)
+	]
+	current_patrol_index = 0
 
 # Process function for behavior
 func _process(delta):
 	# Call parent process
 	super._process(delta)
 	
-	# Check if player is in range and attack if necessary
 	if player != null and is_alive:
-		var distance_to_player = get_distance_to_player()
+		var distance_to_player = position.distance_to(player.position)
 		
-		# If player is in detection range, start pursuing
-		if distance_to_player <= detection_range and distance_to_player > attack_range:
-			pursue_player(delta)
 		# If player is close enough to attack, attack
-		elif distance_to_player <= attack_range:
+		if distance_to_player <= attack_range:
 			attack_player(delta)
+		# If player is in detection range, start chasing
+		elif distance_to_player <= detection_range:
+			chase_player(delta)
+		else:
+			patrol(delta)
+		# Apply movement
+		move_and_slide()
 
-# Pursue the player
-func pursue_player(delta):
+# Chase the player
+func chase_player(delta):
 	if player == null:
 		return
 	
 	var direction = (player.position - position).normalized()
 	velocity = direction * speed
 	
-	# Apply movement
-	move_and_slide()
+	# Rotate to face player (Y-axis rotation for 3D)
+	if direction != Vector3.ZERO:
+		rotation.y = atan2(direction.x, direction.z)
+
+# Patrol around the level
+func patrol(delta):
+	if patrol_points.size() == 0:
+		velocity = Vector3.ZERO
+		return
 	
-	# Rotate to face player
-	if direction != Vector2.ZERO:
-		rotation = direction.angle_to(Vector2.RIGHT)
+	# Move to next patrol point
+	var target_point = patrol_points[current_patrol_index]
+	var direction = (target_point - position).normalized()
+	var distance_to_target = position.distance_to(target_point)
+	
+	velocity = direction * speed * 0.5  # Slower during patrol
+	
+	# Rotate to face direction (Y-axis rotation for 3D)
+	if direction != Vector3.ZERO:
+		rotation.y = atan2(direction.x, direction.z)
+	
+	# If reached target point, move to next
+	if distance_to_target < 2.0:
+		current_patrol_index = (current_patrol_index + 1) % patrol_points.size()
 
 # Attack the player
 func attack_player(delta):
 	if player == null:
 		return
 	
-	# Check if attack is on cooldown
-	var current_time = Time.get_ticks_msec() / 1000.0
-	if current_time - last_attack_time < attack_cooldown:
-		return
+	velocity = Vector3.ZERO  # Stop moving during attack
 	
 	# Perform attack
-	last_attack_time = current_time
 	player.take_damage(damage)
 	
 	# Play attack animation
@@ -82,16 +101,11 @@ func attack_player(delta):
 		animation_player.play("attack")
 
 # Handle damage
-func _on_entity_damaged(amount: float, new_health: float):
-	# Play damage animation or effect
+func _on_health_changed(new_health: float, max_health: float):
 	if animation_player.has_animation("damage"):
 		animation_player.play("damage")
 
 # Handle death
 func _on_entity_killed(entity):
-	# Play death animation or effect
 	if animation_player.has_animation("death"):
 		animation_player.play("death")
-	
-	# Remove entity from game
-	queue_free()

@@ -1,87 +1,35 @@
-[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000000"]
-
-[ext_resource type="Script" path="res://scripts/level_manager.gd" id="1_001"]
+[gd_scene load_steps=1 format=3 uid="uid://level001"]
 
 [node name="Level0" type="Node2D"]
-script = ExtResource("1_001")
+script = ExtResource("res://scripts/level_manager.gd")
 level_name = "Level 0"
 required_drives = 2
 level_index = 0
 
 [node name="Background" type="Sprite2D" parent="."]
-texture = ExtResource("1_001")
+texture = ExtResource("res://assets/textures/floor_texture.png")
 position = Vector2(0, 0)
 anchor_right = 1.0
 anchor_bottom = 1.0
 scale = Vector2(2, 2)
 
 [node name="DataDrive1" type="Node2D" parent="."]
-script = ExtResource("1_002")
+script = ExtResource("res://scripts/data_drive_2d.gd")
 position = Vector2(5, 5)
 drive_id = "drive_001"
 
 [node name="DataDrive2" type="Node2D" parent="."]
-script = ExtResource("1_002")
+script = ExtResource("res://scripts/data_drive_2d.gd")
 position = Vector2(-5, -5)
 drive_id = "drive_002"
 
 [node name="ExitDoor" type="Node2D" parent="."]
-script = ExtResource("1_003")
+script = ExtResource("res://scripts/exit_door_2d.gd")
 position = Vector2(10, 10)
 door_id = "exit_door_001"
 required_drives = 3
 
-[node name="EntityHound1" type="Node2D" parent="."]
-script = ExtResource("1_004")
-position = Vector2(-5, -5)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 2.5
-detection_range = 8.0
-attack_range = 1.5
-damage = 25
-
-[node name="EntitySmiler1" type="Node2D" parent="."]
-script = ExtResource("1_005")
-position = Vector2(0, -10)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 1.5
-detection_range = 5.0
-attack_range = 1.0
-damage = 15
-
-[node name="EntityStalker1" type="Node2D" parent="."]
-script = ExtResource("1_006")
-position = Vector2(10, 0)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 2.0
-detection_range = 6.0
-attack_range = 2.0
-damage = 20
-
-[node name="EntityWatcher1" type="Node2D" parent="."]
-script = ExtResource("1_007")
-position = Vector2(-10, 0)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 1.0
-detection_range = 10.0
-attack_range = 3.0
-damage = 30
-
-[node name="EntityWhisperer1" type="Node2D" parent="."]
-script = ExtResource("1_008")
-position = Vector2(0, 10)
-entity_type = "ANOMALOUS"
-health = 100
-max_health = 100
-speed = 1.8
-detection_range = 7.0
-attack_range = 2.5
-damage = 25
+[node name="EntitySpawner" type="Node" parent="."]
+script = ExtResource("res://scripts/entity_spawner_2d.gd")
+spawn_rate = 3.0
+max_entities = 5

@@ -1,23 +1,25 @@
 [gd_scene load_steps=5 format=3 uid="uid://stalker001"]
 
-[node name="StalkerEntity" type="Node3D"]
+[ext_resource type="Script" path="res://scripts/entity_stalker.gd" id="1_stalker"]
+
+[node name="StalkerEntity" type="CharacterBody3D"]
 visibility_layer = 1
+script = ExtResource("1_stalker")
+entity_type = "STALKER"
+health = 180.0
+max_health = 180.0
+speed = 2.5
+detection_range = 10.0
+attack_range = 2.5
+damage = 25.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StalkerEntity"]
-mesh = ExtResource("uid://stalkermesh001")
-material_override = ExtResource("uid://stalkermat001")
-position = Vector3(0, 0, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StalkerEntity"]
-shape = ExtResource("uid://stalkercoll001")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1, 0)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="StalkerEntity"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 current_animation = "idle"
 
-[node name="StalkerAI" type="Node" parent="StalkerEntity"]
-script = ExtResource("uid://stalkerai001")
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="StalkerEntity"]
-stream = ExtResource("uid://stalkersound001")
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 volume_db = -15.0

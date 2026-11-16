@@ -1,0 +1,31 @@
+[gd_scene load_steps=1 format=3 uid="uid://spawn001"]
+
+[node name="SpawnPoint" type="Position2D"]
+script = ExtResource("1_spawn_point_script")
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+
+[sub_resource type="Script" id="1_spawn_point_script"]
+tool
+class_name SpawnPoint
+extends Position2D
+
+# Spawn point for entities
+# This node defines where entities should spawn in a level
+
+@export var spawn_type: String = "SMILER"
+@export var level_name: String = "Level 0"
+@export var enabled: bool = true
+
+func _ready():
+	# Add to spawn point group
+	add_to_group("spawn_point")
+
+func get_spawn_type() -> String:
+	return spawn_type
+
+func get_level_name() -> String:
+	return level_name
+
+func is_enabled() -> bool:
+	return enabled

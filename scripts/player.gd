@@ -1,6 +1,14 @@
 extends "res://scripts/entity_base_2d.gd"
 
 # Player-specific behavior
+signal data_drive_collected
+signal player_died
+signal door_unlocked
+signal door_opened
+signal door_closed
+signal flicker_effect(duration)
+signal mental_effect(duration)
+
 var sanity: float = 100.0
 var max_sanity: float = 100.0
 var is_stunned: bool = false
@@ -30,8 +38,23 @@ func _ready():
 	sprite.centered = false
 	add_child(sprite)
 	
-	# Connect to input
-	connect("input", self, "handle_input")
+func _process(delta):
+	# Let the base entity handle its own update first
+	super._process(delta)
+
+	# Collect nearby data drives by proximity
+	_collect_nearby_drives()
+
+func _collect_nearby_drives():
+	# Mark any drive within range as collected and notify the game controller
+	for drive in get_tree().get_nodes_in_group("data_drive"):
+		if drive.is_collected:
+			continue
+		if position.distance_to(drive.position) < 1.0:
+			drive.is_collected = true
+			if drive.get("Sprite"):
+				drive.Sprite.hide()
+			emit_signal("data_drive_collected")
 
 func handle_input(delta):
 	# Handle player movement
@@ -76,13 +99,13 @@ func apply_mental_effect(duration):
 func stun(duration):
 	# Stun player temporarily
 	is_stunned = true
-	yield(get_tree().create_timer(duration), "timeout")
+	await get_tree().create_timer(duration).timeout
 	is_stunned = false
 
 func dizzy(duration):
 	# Make player dizzy temporarily
 	is_dizzy = true
-	yield(get_tree().create_timer(duration), "timeout")
+	await get_tree().create_timer(duration).timeout
 	is_dizzy = false
 
 func collect_data_drive():

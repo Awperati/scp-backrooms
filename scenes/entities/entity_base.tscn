@@ -1,19 +1,15 @@
 [gd_scene load_steps=3 format=3 uid="uid://baseentity001"]
 
-[node name="EntityBase" type="Node3D"]
+[ext_resource type="Script" path="res://scripts/entity_base.gd" id="1_base"]
+
+[node name="EntityBase" type="CharacterBody3D"]
 visibility_layer = 1
+script = ExtResource("1_base")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="EntityBase"]
-mesh = ExtResource("uid://baseentitymesh001")
-material_override = ExtResource("uid://baseentitymat001")
-position = Vector3(0, 0, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="EntityBase"]
-shape = ExtResource("uid://baseentitycoll001")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1, 0)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="EntityBase"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 current_animation = "idle"
-
-[node name="EntityAI" type="Node" parent="EntityBase"]
-script = ExtResource("uid://baseentityai001")

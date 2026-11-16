@@ -1,5 +1,7 @@
 extends Node
 
+signal restart_game
+
 func _ready():
 	# Setup game over screen
 	var restart_button = $RestartButton
@@ -8,4 +10,4 @@ func _ready():
 
 func _on_restart_button_pressed():
 	# Restart the game
-	TransitionManager.change_scene("res://scenes/levels/level_0.tscn")
+	emit_signal("restart_game")

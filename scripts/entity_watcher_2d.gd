@@ -34,7 +34,7 @@ func watch():
 	# Watcher stays still and watches for player
 	while true:
 		# Wait in place
-		yield(get_tree().create_timer(1.0), "timeout")
+		await get_tree().create_timer(1.0).timeout
 		
 		# Check if player is visible
 		if player and is_player_visible():
@@ -62,9 +62,9 @@ func chase_player():
 				attacking = true
 				attack()
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func attack():
 	# Watcher attacks with special effect
@@ -87,9 +87,9 @@ func attack():
 			# Move towards player
 			velocity = direction * speed
 			
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 		else:
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 
 func is_player_visible():
 	# Simple visibility check
