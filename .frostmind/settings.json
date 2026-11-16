@@ -1,1 +1,1 @@
-﻿{"checks":null}
+﻿{"checks":[{"name":"noop","command":"echo ok"}]}
