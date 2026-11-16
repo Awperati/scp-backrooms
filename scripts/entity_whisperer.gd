@@ -6,6 +6,8 @@ extends "res://scripts/entity_base.gd"
 # Entity-specific properties
 @export var patrol_points: Array[Vector3] = []
 @export var current_patrol_index: int = 0
+@export var attack_cooldown: float = 2.2
+var last_attack_time: float = 0.0
 
 # Animation and visual properties
 @onready var animation_player = $AnimationPlayer
@@ -90,6 +92,12 @@ func attack_player(delta):
 	if player == null:
 		return
 	
+	# Check attack cooldown
+	var current_time = Time.get_ticks_msec() / 1000.0
+	if current_time - last_attack_time < attack_cooldown:
+		return
+	
+	last_attack_time = current_time
 	velocity = Vector3.ZERO  # Stop moving during attack
 	
 	# Perform attack
