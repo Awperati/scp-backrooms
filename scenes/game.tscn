@@ -20,10 +20,10 @@ script = ExtResource("3_ui")
 script = ExtResource("4_au")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-shader_overrides/ambient_color="&h1a1a2e"
+shader_overrides/ambient_light_color="&h1a1a2e"
 shader_overrides/ambient_light_intensity=0.4
 shader_overrides/fog_enabled=true
 shader_overrides/fog_density=0.015
-shader_overrides/fog_color="&h1a1a2e"
-shader_overrides/fog_energy=0.0
+shader_overrides/fog_light_color="&h1a1a2e"
+shader_overrides/fog_light_energy=0.0
 shader_overrides/tone_mapping=3

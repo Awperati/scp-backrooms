@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://watchr00"]
+[gd_scene load_steps=2 format=3 uid="uid://watchr00"]
 
 [ext_resource type="Script" path="res://scripts/entity_watcher.gd" id="1_wth"]
 

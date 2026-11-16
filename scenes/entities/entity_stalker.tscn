@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://stalkr00"]
+[gd_scene load_steps=2 format=3 uid="uid://stalkr00"]
 
 [ext_resource type="Script" path="res://scripts/entity_stalker.gd" id="1_stk"]
 

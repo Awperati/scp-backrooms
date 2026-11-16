@@ -1,7 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://proj000"]
 
 [ext_resource type="Script" path="res://scripts/projectile.gd" id="1_prj"]
-[ext_resource type="SphereMesh" path="res://scenes/projectile.tscn:1" id="2_sphere"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_proj"]
 radius=0.2

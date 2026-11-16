@@ -1,10 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://level000"]
+[gd_scene load_steps=8 format=3 uid="uid://level000"]
 
 [ext_resource type="Script" path="res://scripts/level_manager.gd" id="1_lvl"]
 [ext_resource type="Script" path="res://scripts/data_drive.gd" id="2_dd"]
 [ext_resource type="Script" path="res://scripts/exit_door.gd" id="3_ed"]
-[ext_resource type="BoxMesh" path="res://scenes/level.tscn:1" id="4_box1"]
-[ext_resource type="BoxMesh" path="res://scenes/level.tscn:2" id="5_box2"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size="16,0.1,16"
