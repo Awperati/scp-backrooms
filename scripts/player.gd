@@ -29,6 +29,13 @@ func _ready() -> void:
 	if player_flashlight:
 		player_flashlight.flashlight_on = flashlight_on
 		player_flashlight.enabled = true
+	
+	# Position at spawn point in level
+	var game = get_node("/root/Game")
+	if game:
+		var spawn = game.get_node("Level/PlayerSpawn")
+		if spawn:
+			global_position = spawn.global_position
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:

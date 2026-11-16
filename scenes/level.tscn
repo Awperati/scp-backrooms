@@ -122,4 +122,7 @@ shape = SubResource("BoxShape3D_door")
 [node name="ExitDoor/DoorFrame" type="MeshInstance3D" parent="Level/ExitDoor"]
 mesh = SubResource("BoxMesh_wall1")
 location="0,2,8"
+
+[node name="PlayerSpawn" type="Marker3D" parent="Level"]
+location="0,0,0"
 rotation_euler="0,0,0"
