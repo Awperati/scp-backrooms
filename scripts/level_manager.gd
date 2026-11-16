@@ -7,6 +7,8 @@ var level_data: Dictionary = {}
 
 func _ready() -> void:
 	_load_level_data()
+	GameController.sanity_changed.connect(_on_sanity_changed)
+	GameController.game_over_emitted.connect(_on_game_over)
 	_load_level(current_level)
 
 func _load_level_data() -> void:
@@ -17,6 +19,13 @@ func _load_level_data() -> void:
 		var parsed = JSON.parse_string(json)
 		if parsed:
 			level_data = parsed
+
+func _on_sanity_changed(value: float) -> void:
+	pass
+
+func _on_game_over() -> void:
+	var game_over = load("res://scenes/game_over.tscn").instantiate()
+	get_tree().root.add_child(game_over)
 
 func _load_level(level_index: int) -> void:
 	current_level = level_index
@@ -47,13 +56,10 @@ func _on_exit_door_triggered(required_drives: int) -> void:
 func _load_next_level() -> void:
 	current_level += 1
 	if current_level >= level_data.get("levels", []).size():
-		# Game complete
 		_show_victory()
 		return
 	_load_level(current_level)
 
 func _show_victory() -> void:
-	var title = get_tree().get_first_node_in_group("ui_title")
-	if title:
-		title.text = "YOU ESCAPED THE BACKROOMS"
-		title.visible = true
+	var victory = load("res://scenes/victory.tscn").instantiate()
+	get_tree().root.add_child(victory)

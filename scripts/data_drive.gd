@@ -1,4 +1,4 @@
-## Collectible data drive. Adds to inventory when picked up.
+## Collectible data drive. Adds to inventory and tracks level progress.
 extends Area3D
 
 func _ready() -> void:
@@ -7,6 +7,10 @@ func _ready() -> void:
 func _on_body_entered(body: Node) -> void:
 	if body.name == "Player":
 		GameController.add_item("Data Drive")
+		# Increment collected drives on level
+		var level_mgr = get_node("/root/Game/Level")
+		if level_mgr:
+			level_mgr.data_drives_collected += 1
 		# Play pickup sound
 		var audio = get_node("PickupSound") as AudioStreamPlayer3D
 		if audio:
