@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://floating001"]
+
+[node name="FloatingEntity" type="Node3D"]
+visibility_layer = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="FloatingEntity"]
+mesh = ExtResource("uid://floatingmesh001")
+material_override = ExtResource("uid://floatingmat001")
+position = Vector3(0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloatingEntity"]
+shape = ExtResource("uid://floatingcoll001")
+position = Vector3(0, 1, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="FloatingEntity"]
+current_animation = "idle"
+
+[node name="FloatingAI" type="Node" parent="FloatingEntity"]
+script = ExtResource("uid://floatingai001")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="FloatingEntity"]
+stream = ExtResource("uid://floatingsound001")
+volume_db = -15.0

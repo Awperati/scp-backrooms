@@ -1,38 +1,69 @@
 extends CharacterBody3D
 
-# Player configuration
-@export var move_speed: float = 5.0
-@export var jump_velocity: float = 10.0
-@export var gravity: float = 9.8
+# Player Controller for SCP Backrooms game
+# Handles player movement, actions, and visual effects
 
-# Player state
-var is_jumping: bool = false
+# Movement properties
+@export var walk_speed: float = 5.0
+@export var run_speed: float = 8.0
+@export var jump_velocity: float = 4.5
+@export var gravity: float = -9.8
+
+# Player stats
 var health: float = 100.0
 var sanity: float = 100.0
+var is_running: bool = false
+var is_sprinting: bool = false
 
-# Input
-var direction: Vector3 = Vector3.ZERO
-var velocity: Vector3 = Vector3.ZERO
+# References
+@onready var camera: Camera3D = null
+@onready var audio_manager: Node = null
+@onready var ui_manager: Node = null
+@onready var model: Node3D = null
+@onready var flashlight: Node = null
+@onready var footsteps_particles: Particles3D = null
+@onready var damage_flash: Sprite3D = null
 
-# Game references
-var game_controller: Node = null
+# Animation
+@onready var animation_player: AnimationPlayer = null
 
 func _ready():
-	# Initialize player
-	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
-	health = 100.0
-	sanity = 100.0
+	# Initialize references
+	camera = $Camera3D
+	audio_manager = get_tree().get_nodes_in_group("audio_manager")[0] if get_tree().get_nodes_in_group("audio_manager").size() > 0 else null
+	ui_manager = get_tree().get_nodes_in_group("ui_manager")[0] if get_tree().get_nodes_in_group("ui_manager").size() > 0 else null
+	model = $Model
+	flashlight = $Flashlight
+	footsteps_particles = $FootstepParticles
+	damage_flash = $DamageFlash
+	
+	# Setup animation player
+	animation_player = $AnimationPlayer
+	if animation_player != null:
+		animation_player.play("idle")
+	
+	# Connect to signals
+	connect_signals()
 
-func _process(delta):
+func connect_signals():
+	# Connect signals
+	pass
+
+func _physics_process(delta):
 	# Handle movement
 	handle_movement(delta)
 	
-	# Update sanity (decreases over time)
-	sanity = max(sanity - delta * 0.5, 0)
+	# Update UI
+	update_ui()
+	
+	# Handle flashlight
+	if flashlight != null:
+		flashlight.rotation.x = deg_to_rad(-camera.rotation.x)
 
 func handle_movement(delta):
+	var direction = Vector3.ZERO
+	
 	# Get input
-	direction = Vector3.ZERO
 	if Input.is_action_pressed("move_forward"):
 		direction.z -= 1
 	if Input.is_action_pressed("move_backward"):
@@ -41,45 +72,101 @@ func handle_movement(delta):
 		direction.x -= 1
 	if Input.is_action_pressed("move_right"):
 		direction.x += 1
-	if Input.is_action_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-		is_jumping = true
 	
 	# Normalize direction
-	direction = direction.normalized()
+	if direction.length() > 0:
+		direction = direction.normalized()
 	
 	# Apply movement
-	velocity.x = direction.x * move_speed
-	velocity.z = direction.z * move_speed
+	var speed = walk_speed
+	if Input.is_action_pressed("run") and not is_sprinting:
+		is_sprinting = true
+		speed = run_speed
+	elif not Input.is_action_pressed("run") and is_sprinting:
+		is_sprinting = false
+		speed = walk_speed
+	
+	# Apply movement
+	velocity.x = direction.x * speed
+	velocity.z = direction.z * speed
+	
+	# Handle jumping
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+		if audio_manager != null:
+			audio_manager.play_jump_sound()
 	
 	# Apply gravity
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-	else:
-		velocity.y = 0
+	velocity.y += gravity
 	
 	# Move player
 	move_and_slide()
+
+func update_ui():
+	# Update UI with player stats
+	if ui_manager != null:
+		ui_manager.update_health(health)
+		ui_manager.update_sanity(sanity)
 
 func take_damage(amount: float):
 	health -= amount
 	if health <= 0:
 		health = 0
-		if game_controller != null:
-			game_controller.game_over()
+		game_over()
+	else:
+		# Visual feedback
+		if damage_flash != null:
+			damage_flash.visible = true
+			await get_tree().create_timer(0.1).timeout
+			damage_flash.visible = false
+		
+		# Play sound
+		if audio_manager != null:
+			audio_manager.play_damage_sound()
+	
+	# Update UI
+	update_ui()
 
-func restore_health(amount: float):
-	health = min(health + amount, 100.0)
-
-func reduce_sanity(amount: float):
+func lose_sanity(amount: float):
 	sanity -= amount
 	if sanity <= 0:
 		sanity = 0
-		if game_controller != null:
-			game_controller.game_over()
+		game_over()
+	else:
+		# Play sound
+		if audio_manager != null:
+			audio_manager.play_sanity_loss_sound()
+	
+	# Update UI
+	update_ui()
 
-func restore_sanity(amount: float):
+func game_over():
+	# Handle game over
+	if ui_manager != null:
+		ui_manager.show_message("GAME OVER", 5.0)
+	
+	# Disable player controls
+	monitoring = false
+	physics_process_mode = PhysicsProcessModeEnum.DISABLED
+
+func gain_sanity(amount: float):
 	sanity = min(sanity + amount, 100.0)
+	update_ui()
 
-func get_sanity_percentage():
-	return sanity / 100.0
+func gain_health(amount: float):
+	health = min(health + amount, 100.0)
+	update_ui()
+
+func toggle_flashlight():
+	if flashlight != null:
+		flashlight.visible = !flashlight.visible
+
+func play_footstep():
+	if footsteps_particles != null:
+		footsteps_particles.emitting = true
+		await get_tree().create_timer(0.1).timeout
+		footsteps_particles.emitting = false
+	
+	# Play sound
+	if audio_manager != null:
+		audio_manager.play_footstep_sound()

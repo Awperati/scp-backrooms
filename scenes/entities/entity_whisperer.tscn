@@ -1,12 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://whisper00"]
+[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000007"]
 
-[ext_resource type="Script" path="res://scripts/entity_whisperer.gd" id="1_whp"]
+[ext_resource type="Script" path="res://scripts/entity_whisperer.gd" id="1_001"]
 
-[node name="Whisperer" type="Node3D"]
-script = ExtResource("1_whp")
-
-[node name="Body" type="MeshInstance3D" parent="Whisperer"]
-rotation_euler="0,0,0"
-location="0,1,0"
-
-[node name="WhisperSound" type="AudioStreamPlayer3D" parent="Whisperer"]
+[node name="EntityWhisperer" type="Node2D"]
+script = ExtResource("1_001")
+name = "EntityWhisperer"
+position = Vector2(0, 0)
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 1.8
+detection_range = 7.0
+attack_range = 2.5
+damage = 25
+z_index = 5

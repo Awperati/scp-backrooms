@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://damage001"]
+
+[node name="DamageParticles" type="Particles3D"]
+visible = true
+process_material = ExtResource("uid://damagemat001")
+emitting = false
+amount = 100
+lifetime = 0.5
+pre_process_time = 0.1
+speed_scale = 1.0
+fixed_fps = 0
+one_shot = false
+loop = false
+draw_order = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="DamageParticles"]
+mesh = ExtResource("uid://damagemesh001")
+material_override = ExtResource("uid://damagemat001")
+position = Vector3(0, 0, 0)

@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://footsteps001"]
+
+[node name="FootstepParticles" type="Particles3D"]
+visible = true
+process_material = ExtResource("uid://footstepmat001")
+emitting = false
+amount = 50
+lifetime = 1.0
+pre_process_time = 0.1
+speed_scale = 1.0
+fixed_fps = 0
+one_shot = false
+loop = true
+draw_order = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="FootstepParticles"]
+mesh = ExtResource("uid://footstepmesh001")
+material_override = ExtResource("uid://footstepmat001")
+position = Vector3(0, 0, 0)

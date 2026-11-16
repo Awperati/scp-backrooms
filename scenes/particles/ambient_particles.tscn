@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://ambient001"]
+
+[node name="AmbientParticles" type="Particles3D"]
+visible = true
+process_material = ExtResource("uid://ambientmat001")
+emitting = false
+amount = 200
+lifetime = 2.0
+pre_process_time = 0.1
+speed_scale = 1.0
+fixed_fps = 0
+one_shot = false
+loop = true
+draw_order = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="AmbientParticles"]
+mesh = ExtResource("uid://ambientmesh001")
+material_override = ExtResource("uid://ambientmat001")
+position = Vector3(0, 0, 0)

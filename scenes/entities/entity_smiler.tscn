@@ -1,20 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://smiler00"]
+[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000004"]
 
-[ext_resource type="Script" path="res://scripts/entity_smiler.gd" id="1_sml"]
+[ext_resource type="Script" path="res://scripts/entity_smiler.gd" id="1_001"]
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_smiler"]
-radius=0.5
-height=1.0
-
-[node name="Smiler" type="Node3D"]
-script = ExtResource("1_sml")
-
-[node name="Collision" type="CollisionShape3D" parent="Smiler"]
-shape = SubResource("CylinderShape3D_smiler")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Smiler"]
-mesh = ExtResource("res://assets/models/smiler_model.tres")
-material_override = ExtResource("res://assets/materials/smiler_material.tres")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Smiler"]
-playback_process_mode = 1
+[node name="EntitySmiler" type="Node2D"]
+script = ExtResource("1_001")
+name = "EntitySmiler"
+position = Vector2(0, 0)
+entity_type = "ANOMALOUS"
+health = 100
+max_health = 100
+speed = 1.5
+detection_range = 5.0
+attack_range = 1.0
+damage = 15
+z_index = 5

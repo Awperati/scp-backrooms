@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://pickup001"]
+
+[node name="PickupParticles" type="Particles3D"]
+visible = true
+process_material = ExtResource("uid://pickupmat001")
+emitting = false
+amount = 75
+lifetime = 0.8
+pre_process_time = 0.1
+speed_scale = 1.0
+fixed_fps = 0
+one_shot = false
+loop = false
+draw_order = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PickupParticles"]
+mesh = ExtResource("uid://pickupmesh001")
+material_override = ExtResource("uid://pickupmat001")
+position = Vector3(0, 0, 0)

@@ -1,19 +1,37 @@
 shader_type spatial;
 render_mode depth_test, cull_back;
 
+// Ambient lighting shader for SCP Backrooms game
+// Provides dynamic ambient lighting effects
+
 uniform float ambient_intensity : 0.2;
 uniform vec3 ambient_color : vec3(0.1, 0.1, 0.1);
 
+// Vertex shader inputs
+varying vec3 v_normal;
+
+void vertex() {
+	// Store normal for fragment shader
+	v_normal = NORMAL;
+}
+
 void fragment() {
-	ALBEDO = vec3(0.0);
+	// Get base albedo
+	vec3 albedo = ALBEDO;
 	
-	// Ambient lighting
+	// Normalize normal
+	vec3 normal = normalize(v_normal);
+	
+	// Calculate ambient lighting
 	vec3 ambient = ambient_color * ambient_intensity;
 	
-	// Apply ambient to base color
-	ALBEDO = ambient;
+	// Add directional lighting
+	vec3 light_dir = normalize(vec3(0.5, 1.0, 0.5));
+	vec3 light = max(dot(normal, light_dir), 0.0);
 	
-	// Add a subtle glow effect for the backrooms
-	vec3 glow = vec3(0.05, 0.05, 0.05);
-	ALBEDO += glow;
+	// Apply lighting to albedo
+	vec3 result = albedo * (ambient + light);
+	
+	// Apply alpha
+	COLOR = vec4(result, 1.0);
 }

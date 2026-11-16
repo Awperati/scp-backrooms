@@ -1,5 +1,11 @@
 extends "res://scripts/entity.gd"
 
+# Hound-specific behavior
+var ai_state: String = "patrolling"
+var aggression: float = 0.7
+var attacking: bool = false
+var sound_source: Node2D = null
+
 func _ready():
 	super._ready()
 	
