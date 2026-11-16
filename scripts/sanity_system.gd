@@ -1,49 +1,66 @@
-## Sanity system. Tracks sanity, triggers effects at thresholds.
-extends Node3D
+extends Node
 
-var current_sanity: float = 100.0
-var sanity_thresholds: Dictionary = {
-	"low": 30.0,
-	"very_low": 15.0,
-	"critical": 5.0
-}
+# Sanity system
+@export var sanity_decay_rate: float = 0.5
+@export var sanity_recovery_rate: float = 0.2
+@export var flicker_intensity: float = 1.0
+@export var flicker_speed: float = 5.0
 
-var hallucination_timer: float = 0.0
-var regeneration_rate: float = 1.0
+# References
+var player: Node3D = null
+var game_controller: Node = null
+var sanity_shader: ShaderMaterial = null
 
-func _ready() -> void:
-	GameController.sanity_changed.connect(_on_sanity_changed)
-
-func _process(delta: float) -> void:
-	current_sanity = GameController.sanity
+func initialize():
+	# Setup sanity system
+	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
+	player = get_tree().get_nodes_in_group("player")[0] if get_tree().get_nodes_in_group("player").size() > 0 else null
 	
-	# Regeneration in light, no entities nearby
-	if current_sanity < 50.0:
-		var flashlight = get_node("../Body/PlayerFlashlight")
-		var is_lit = flashlight.flashlight_on if flashlight else false
-		if is_lit:
-			GameController.add_sanity(regeneration_rate * delta)
+	# Get camera and shader
+	var camera_nodes = get_tree().get_nodes_in_group("camera")
+	if camera_nodes.size() > 0:
+		var camera = camera_nodes[0] as Camera3D
+		if camera != null:
+			var viewport = camera.get_viewport()
+			if viewport != null:
+				sanity_shader = viewport.get_camera_3d().material
+
+func update(delta):
+	# Update sanity based on player state
+	if player != null:
+		var player_controller = player.get_script()
+		if player_controller != null:
+			# Apply sanity decay
+			player_controller.reduce_sanity(sanity_decay_rate * delta)
+			
+			# Apply sanity recovery when safe
+			if is_player_safe():
+				player_controller.restore_sanity(sanity_recovery_rate * delta)
 	
-	# Sanity hallucinations
-	if current_sanity < 15.0:
-		hallucination_timer += delta
-		if hallucination_timer > 3.0:
-			hallucination_timer = 0.0
-			_trigger_hallucination()
+	# Update visual effects
+	update_visual_effects()
 
-func _on_sanity_changed(value: float) -> void:
-	current_sanity = value
-	if current_sanity < 30.0:
-		# Flashlight flicker handled by player_flashlight
-		pass
-	if current_sanity < 15.0:
-		# Audio hallucinations handled by audio_manager
-		pass
-	if current_sanity < 5.0:
-		# Visual distortion handled by shader
-		pass
+func is_player_safe():
+	# Check if player is in a safe area (not near entities)
+	if player == null or game_controller == null:
+		return false
+	
+	var entities = game_controller.get_entities_by_type("ANOMALOUS")
+	for entity in entities:
+		if entity != null:
+			var distance = player.position.distance_to(entity.position)
+			if distance < 5.0:  # Near entity
+				return false
+	return true
 
-func _trigger_hallucination() -> void:
-	var audio = get_node("../Body/FootstepSound")
-	if audio and audio.stream:
-		audio.play()
+func update_visual_effects():
+	# Update shader effects based on sanity level
+	if sanity_shader != null and player != null:
+		var player_controller = player.get_script()
+		if player_controller != null:
+			var sanity_level = player_controller.get_sanity_percentage()
+			
+			# Update flicker effect
+			var flicker_amount = 1.0 - sanity_level
+			sanity_shader.set_shader_parameter("flicker_intensity", flicker_amount * flicker_intensity)
+			sanity_shader.set_shader_parameter("flicker_speed", flicker_amount * flicker_speed)

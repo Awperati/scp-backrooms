@@ -1,49 +1,34 @@
-## Exit door that leads to next level
 extends Node3D
 
-# Door properties
-@export var required_drives: int = 3
-@export var is_unlocked: bool = false
+# Exit door properties
 @export var door_id: String = "exit_door_001"
+@export var required_drives: int = 3
+@export var unlocked: bool = false
 
-# References to game components
-var game_controller: Node
-var player: Node3D
+# Game references
+var game_controller: Node = null
 
-func _ready() -> void:
-	# Get references to game controller
-	game_controller = get_tree().get_first_node_in_group("game_controller")
-	
-	# Get player reference
-	player = get_tree().get_first_node_in_group("player")
+func _ready():
+	# Setup exit door
+	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
 
-func _on_body_entered(body: Node) -> void:
-	# Handle player approaching the door
-	if body.name == "Player":
-		# Check if player can pass through
-		if is_unlocked:
-			# Unlock door and allow passage
-			emit_signal("door_unlocked", self)
-		else:
-			# Door is locked, notify player
-			emit_signal("door_locked", self)
+func _process(delta):
+	# Check if player is near and has enough drives
+	if not unlocked and game_controller != null:
+		var player_nodes = get_tree().get_nodes_in_group("player")
+		if player_nodes.size() > 0:
+			var player = player_nodes[0] as Node3D
+			if player != null:
+				var distance = position.distance_to(player.position)
+				if distance < 3.0:
+					# Check if player has enough drives
+					if game_controller.collected_drives >= required_drives:
+						unlock_door()
 
-func unlock_door() -> void:
+func unlock_door():
 	# Unlock the door
-	is_unlocked = true
-
-func lock_door() -> void:
-	# Lock the door
-	is_unlocked = false
-
-func _on_door_unlocked(door: Node) -> void:
-	# Handle door unlock
-	pass
-
-func _on_door_locked(door: Node) -> void:
-	# Handle door lock
-	pass
-
-# Signals
-signal door_unlocked
-signal door_locked
+	unlocked = true
+	
+	# Show victory screen or next level
+	if game_controller != null:
+		game_controller.victory()

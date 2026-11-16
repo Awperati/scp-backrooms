@@ -1,75 +1,45 @@
-## Watcher entity with observation behavior
 extends "res://scripts/entity.gd"
 
-# Watcher properties
 @export var detection_range: float = 10.0
 @export var attack_range: float = 3.0
-@export var attack_cooldown: float = 5.0
-@export var attack_damage: int = 30
-@export var speed: float = 1.0
+@export var damage: float = 30.0
 
-# AI state
-var attack_timer: float = 0.0
-var is_attacking: bool = false
-var is_observing: bool = false
+func _ready():
+	super._ready()
+	entity_type = "WATCHER"
+	health = 100
+	max_health = 100
+	speed = 1.0
+	detection_range = 10.0
+	attack_range = 3.0
+	damage = 30.0
 
-func setup_ai() -> void:
-	# Setup watcher AI behavior
-	print("Watcher AI initialized")
-
-func update_ai(delta: float) -> void:
-	# Watcher AI behavior
-	if not is_alive:
+func _process(delta):
+	if not is_active:
 		return
-	
-	# Update attack timer
-	if attack_timer > 0:
-		attack_timer -= delta
-	
-	# Check if player is in range
-	var player_distance = global_position.distance_to(player.global_position)
-	
-	if player_distance < detection_range:
-		# Observe player
-		if not is_observing:
-			is_observing = true
-			# This would implement observation behavior
-			# For now just a placeholder
-			print("Watcher observing player")
 		
-		# Rotate to face player
-		look_at(player.global_position, Vector3.UP)
+	if player == null:
+		player = get_tree().get_nodes_in_group("player")[0] as Node3D
 		
-		# Attack if in range and cooldown is over
-		if player_distance < attack_range and attack_timer <= 0:
+	# Check if player is in detection range
+	var distance_to_player = position.distance_to(player.position)
+	
+	if distance_to_player <= detection_range:
+		# Face player
+		var direction = (player.position - position).normalized()
+		look_at(player.position, Vector3.UP)
+		
+		# Move towards player if not in attack range
+		if distance_to_player > attack_range:
+			velocity = direction * speed
+			move_and_slide()
+		else:
+			# Attack player
 			attack_player()
-	else:
-		# Idle behavior
-		velocity = Vector3.ZERO
-
-func attack_player() -> void:
-	# Attack the player
-	if game_controller and not is_attacking:
-		is_attacking = true
-		attack_timer = attack_cooldown
-		
-		# Damage player
-		game_controller.damage_player(attack_damage)
-		
-		# Reset attack state
-		is_attacking = false
-
-func _on_player_detected(player: Node3D) -> void:
-	# Handle player detection
-	print("Watcher detected player")
-
-func _on_player_attacked(player: Node3D) -> void:
-	# Handle player attack
-	print("Watcher attacked player")
-
-func _on_player_in_range(player: Node3D) -> void:
-	# Handle player in range
-	print("Watcher player in range")
-
-# Signals
-signal watcher_attack
+	
+func attack_player():
+	# Damage player when in attack range
+	if player != null:
+		var player_controller = player.get_script()
+		if player_controller != null:
+			player_controller.take_damage(damage)

@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://stalkr00"]
+
+[ext_resource type="Script" path="res://scripts/entity_stalker.gd" id="1_stk"]
+
+[node name="Stalker" type="Node3D"]
+script = ExtResource("1_stk")
+
+[node name="Body" type="MeshInstance3D" parent="Stalker"]
+rotation_euler="0,0,0"
+location="0,1,0"
+
+[node name="FlickerLight" type="PointLight3D" parent="Stalker"]
+color="&h8800FF"
+energy=0.0
+radius=2

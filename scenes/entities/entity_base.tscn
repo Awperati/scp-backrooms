@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://entitybase00"]
+
+[ext_resource type="Script" path="res://scripts/entity_base.gd" id="1_ent"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_entity"]
+radius=0.5
+height=1.0
+
+[node name="Entity" type="Node3D"]
+script = ExtResource("1_ent")
+
+[node name="Collision" type="CollisionShape3D" parent="Entity"]
+shape = SubResource("CylinderShape3D_entity")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Entity"]
+mesh = ExtResource("res://assets/models/default_entity.tres")
+material_override = ExtResource("res://assets/materials/default_entity_material.tres")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Entity"]
+playback_process_mode = 1

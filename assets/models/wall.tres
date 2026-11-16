@@ -1,0 +1,6 @@
+[gd_resource type="Mesh" format=2 uid="uid:10000000000000000000000000000000"]
+
+[ext_resource type="CubeMesh" path="res://assets/models/wall.mesh" id="1_001"]
+
+[resource]
+mesh = ExtResource("1_001")

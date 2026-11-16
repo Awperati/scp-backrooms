@@ -1,34 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://gameover00"]
+[gd_scene load_steps=1 format=3 uid="uid:10000000000000000000000000000000"]
 
-[ext_resource type="Script" path="res://scripts/game_over.gd" id="1_gameover"]
+[ext_resource type="Script" path="res://scripts/game_over.gd" id="1_001"]
 
-[node name="GameOver" type="Control"]
-script = ExtResource("1_gameover")
-custom_styles/normal/bg_color="&h000000"
+[node name="GameOver" type="Node"]
+script = ExtResource("1_001")
 
-[node name="GameOverLabel" type="Label" parent="GameOver"]
-anchor_right=1
-anchor_bottom=1
-position="100,100"
-size="400,100"
-text="GAME OVER"
-custom_styles/normal/font_size=48
-custom_styles/normal/font_color="&hFF0000"
+[node name="GameOverLabel" type="Label" parent="."]
+text = "GAME OVER"
+position = Vector3(0, 100, 0)
+anchor_right = 1.0
+anchor_bottom = 1.0
 
-[node name="RestartButton" type="Button" parent="GameOver"]
-anchor_right=1
-anchor_bottom=1
-position="100,300"
-size="200,50"
-text="Try Again"
-custom_styles/normal/bg_color="&h404040"
-custom_styles/normal/font_color="&hFFFFFF"
-
-[node name="MainMenuButton" type="Button" parent="GameOver"]
-anchor_right=1
-anchor_bottom=1
-position="100,400"
-size="200,50"
-text="Main Menu"
-custom_styles/normal/bg_color="&h404040"
-custom_styles/normal/font_color="&hFFFFFF"
+[node name="RestartButton" type="Button" parent="."]
+text = "RESTART"
+position = Vector3(0, 200, 0)
+anchor_right = 1.0
+anchor_bottom = 1.0
+size = Vector2(200, 50)

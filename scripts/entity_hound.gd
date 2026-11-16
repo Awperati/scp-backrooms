@@ -1,72 +1,45 @@
-## Hound entity with aggressive AI behavior
 extends "res://scripts/entity.gd"
 
-# Hound properties
 @export var detection_range: float = 8.0
 @export var attack_range: float = 1.5
-@export var attack_cooldown: float = 2.0
-@export var attack_damage: int = 25
-@export var speed: float = 2.5
+@export var damage: float = 25.0
 
-# AI state
-var attack_timer: float = 0.0
-var is_attacking: bool = false
+func _ready():
+	super._ready()
+	entity_type = "HOUND"
+	health = 100
+	max_health = 100
+	speed = 2.5
+	detection_range = 8.0
+	attack_range = 1.5
+	damage = 25.0
 
-func setup_ai() -> void:
-	# Setup hound AI behavior
-	print("Hound AI initialized")
-
-func update_ai(delta: float) -> void:
-	# Hound AI behavior
-	if not is_alive:
+func _process(delta):
+	if not is_active:
 		return
-	
-	# Update attack timer
-	if attack_timer > 0:
-		attack_timer -= delta
-	
-	# Check if player is in range
-	var player_distance = global_position.distance_to(player.global_position)
-	
-	if player_distance < detection_range:
-		# Move toward player
-		var direction = (player.global_position - global_position).normalized()
-		velocity = direction * speed
 		
-		# Rotate to face player
-		look_at(player.global_position, Vector3.UP)
+	if player == null:
+		player = get_tree().get_nodes_in_group("player")[0] as Node3D
 		
-		# Attack if in range
-		if player_distance < attack_range and attack_timer <= 0:
+	# Check if player is in detection range
+	var distance_to_player = position.distance_to(player.position)
+	
+	if distance_to_player <= detection_range:
+		# Face player
+		var direction = (player.position - position).normalized()
+		look_at(player.position, Vector3.UP)
+		
+		# Move towards player if not in attack range
+		if distance_to_player > attack_range:
+			velocity = direction * speed
+			move_and_slide()
+		else:
+			# Attack player
 			attack_player()
-	else:
-		# Idle behavior
-		velocity = Vector3.ZERO
-
-func attack_player() -> void:
-	# Attack the player
-	if game_controller and not is_attacking:
-		is_attacking = true
-		attack_timer = attack_cooldown
-		
-		# Damage player
-		game_controller.damage_player(attack_damage)
-		
-		# Reset attack state
-		# This would be done with a timer or animation
-		is_attacking = false
-
-func _on_player_detected(player: Node3D) -> void:
-	# Handle player detection
-	print("Hound detected player")
-
-func _on_player_attacked(player: Node3D) -> void:
-	# Handle player attack
-	print("Hound attacked player")
-
-func _on_player_in_range(player: Node3D) -> void:
-	# Handle player in range
-	print("Hound player in range")
-
-# Signals
-signal hound_attack
+	
+func attack_player():
+	# Damage player when in attack range
+	if player != null:
+		var player_controller = player.get_script()
+		if player_controller != null:
+			player_controller.take_damage(damage)

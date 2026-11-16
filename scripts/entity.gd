@@ -1,85 +1,55 @@
-## Base entity class for all game entities
-extends Node3D
+extends CharacterBody3D
 
 # Entity properties
 @export var entity_type: String = "ANOMALOUS"
-@export var health: int = 100
-@export var max_health: int = 100
+@export var health: float = 100.0
+@export var max_health: float = 100.0
 @export var speed: float = 1.0
 @export var detection_range: float = 5.0
 @export var attack_range: float = 1.0
-@export var damage: int = 10
-@export var is_alive: bool = true
+@export var damage: float = 10.0
 
-# References to game components
-var game_controller: Node
-var player: Node3D
-var entity_manager: Node
-
-# AI state
-var current_state: String = "IDLE"
+# Game state
+var is_active: bool = true
+var player: Node3D = null
+var game_controller: Node = null
 
 # Movement
-var target_position: Vector3
 var velocity: Vector3 = Vector3.ZERO
 
-func _ready() -> void:
-	# Get references to game controller
-	game_controller = get_tree().get_first_node_in_group("game_controller")
+func _ready():
+	# Initialize the entity
+	player = get_tree().get_nodes_in_group("player")[0] if get_tree().get_nodes_in_group("player").size() > 0 else null
+	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
 	
-	# Get player reference
-	player = get_tree().get_first_node_in_group("player")
-	
-	# Get entity manager
-	entity_manager = get_tree().get_first_node_in_group("entity_manager")
-	
-	# Setup AI
-	setup_ai()
+	# Add to entity manager
+	if game_controller != null:
+		game_controller.add_entity(self)
 
-func setup_ai() -> void:
-	# Setup basic AI behavior
+func _process(delta):
+	# Override in child classes
 	pass
 
-func _process(delta: float) -> void:
-	# Update AI behavior
-	if is_alive:
-		update_ai(delta)
-
-func update_ai(delta: float) -> void:
-	# Update AI state
-	pass
-
-func take_damage(damage_amount: int) -> void:
-	# Take damage from player or environment
-	health -= damage_amount
+func take_damage(amount: float):
+	health -= amount
 	if health <= 0:
-		die()
+		health = 0
+		# Die and remove from game
+		kill_entity()
 
-func die() -> void:
-	# Entity dies
-	is_alive = false
-	emit_signal("entity_destroyed", self)
+func kill_entity():
+	# Remove entity from game
+	if game_controller != null:
+		game_controller.remove_entity(self)
+	
+	# Remove from scene
 	queue_free()
 
-func _on_entity_destroyed(entity: Node) -> void:
-	# Handle entity destruction
-	if entity == self:
-		queue_free()
+func heal(amount: float):
+	health = min(health + amount, max_health)
 
-func _on_player_detected(player: Node3D) -> void:
-	# Handle player detection
-	pass
+func get_health_percentage():
+	return health / max_health
 
-func _on_player_attacked(player: Node3D) -> void:
-	# Handle player attack
-	pass
-
-func _on_player_in_range(player: Node3D) -> void:
-	# Handle player in range
-	pass
-
-# Signals
-signal entity_destroyed
-signal player_detected
-signal player_attacked
-signal player_in_range
+func set_active(active: bool):
+	is_active = active

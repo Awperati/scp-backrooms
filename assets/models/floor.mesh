@@ -1,0 +1,4 @@
+[gd_resource type="CubeMesh" format=2 uid="uid:10000000000000000000000000000000"]
+
+[resource]
+size = Vector3(20, 0.1, 20)

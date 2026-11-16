@@ -1,114 +1,100 @@
-## Main game controller that manages game flow and states
 extends Node
 
-# Game states
-enum GameState {
-	START_SCREEN,
-	PLAYING,
-	GAME_OVER,
-	VICTORY,
-	PAUSED
-}
+# Game state management
+var game_state: String = "TITLE"  # TITLE, PLAYING, PAUSED, GAME_OVER, VICTORY
+var score: int = 0
+var level: int = 1
+var player_health: float = 100.0
+var player_sanity: float = 100.0
+var collected_drives: int = 0
+var required_drives: int = 2
 
-# Game variables
-var current_state: GameState = GameState.START_SCREEN
-var data_drives_collected: int = 0
-var total_data_drives: int = 3
-var player_health: int = 100
-var player_sanity: float = 1.0
-var level_complete: bool = false
+# Entity management
+var entities: Array[Node] = []
 
-# Signals
-signal game_started
-signal game_over
-signal victory
-signal data_drive_collected
-signal sanity_changed
-signal player_damaged
-
-func _ready() -> void:
-	# Initialize game controller
-	_setup_game_controller()
+func initialize():
+	# Initialize game state
+	game_state = "TITLE"
 	
-	# Connect to signals
-	connect("game_started", self, "_on_game_started")
-	connect("game_over", self, "_on_game_over")
-	connect("victory", self, "_on_victory")
+	# Initialize player stats
+	player_health = 100.0
+	player_sanity = 100.0
+	collected_drives = 0
 
-func _setup_game_controller() -> void:
-	# Initialize game settings
-	data_drives_collected = 0
-	player_health = 100
-	player_sanity = 1.0
-	level_complete = false
+func update(delta):
+	# Update game state logic
+	match game_state:
+		"PLAYING":
+			update_gameplay(delta)
+		"PAUSED":
+			update_pause(delta)
+		"GAME_OVER":
+			update_game_over(delta)
+		"VICTORY":
+			update_victory(delta)
 
-func start_game() -> void:
-	# Start the game
-	current_state = GameState.PLAYING
-	emit_signal("game_started")
-	print("Game started")
+func update_gameplay(delta):
+	# Check win condition
+	if collected_drives >= required_drives:
+		game_state = "VICTORY"
 
-func game_over() -> void:
-	# End the game
-	current_state = GameState.GAME_OVER
-	emit_signal("game_over")
-	print("Game over")
+func update_pause(delta):
+	# Pause logic
+	pass
 
-func victory() -> void:
-	# Player wins
-	current_state = GameState.VICTORY
-	emit_signal("victory")
-	print("Victory!")
+func update_game_over(delta):
+	# Game over logic
+	pass
 
-func collect_data_drive() -> void:
-	# Collect a data drive
-	data_drives_collected += 1
-	emit_signal("data_drive_collected")
-	
-	# Check if all drives collected
-	if data_drives_collected >= total_data_drives:
-		level_complete = true
-		print("All data drives collected!")
+func update_victory(delta):
+	# Victory logic
+	pass
 
-func update_sanity(change: float) -> void:
-	# Update player sanity
-	player_sanity += change
-	player_sanity = clamp(player_sanity, 0.0, 1.0)
-	emit_signal("sanity_changed")
+func start_game():
+	game_state = "PLAYING"
 
-func damage_player(amount: int) -> void:
-	# Damage the player
+func pause_game():
+	game_state = "PAUSED"
+
+func resume_game():
+	game_state = "PLAYING"
+
+func game_over():
+	game_state = "GAME_OVER"
+
+func victory():
+	game_state = "VICTORY"
+
+func add_entity(entity: Node):
+	entities.append(entity)
+
+func remove_entity(entity: Node):
+	entities.erase(entity)
+
+func get_entities_by_type(entity_type: String) -> Array[Node]:
+	var result: Array[Node] = []
+	for ent in entities:
+		if ent.entity_type == entity_type:
+			result.append(ent)
+	return result
+
+func collect_drive():
+	collected_drives += 1
+
+func take_damage(amount: float):
 	player_health -= amount
-	emit_signal("player_damaged")
-	
-	# Check if player is dead
 	if player_health <= 0:
 		player_health = 0
 		game_over()
 
-func load_level(level_index: int) -> void:
-	# Load a specific level
-	print("Loading level %d" % level_index)
-	
-	# Clear current level
-	get_tree().call_group("entities", "queue_free")
-	
-	# Load new level
-	# This would typically involve loading a new scene
-	# For now, just reset the game state
-	_setup_game_controller()
-	
-	# Start new level
-	start_game()
+func restore_health(amount: float):
+	player_health = min(player_health + amount, 100.0)
 
-func _on_game_started() -> void:
-	# Handle game started event
-	print("Game started event received")
+func reduce_sanity(amount: float):
+	player_sanity -= amount
+	if player_sanity <= 0:
+		player_sanity = 0
+		game_over()
 
-func _on_game_over() -> void:
-	# Handle game over event
-	print("Game over event received")
-
-func _on_victory() -> void:
-	# Handle victory event
-	print("Victory event received")
+func restore_sanity(amount: float):
+	player_sanity = min(player_sanity + amount, 100.0)

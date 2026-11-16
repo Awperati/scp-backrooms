@@ -1,70 +1,37 @@
-## Flashlight for player to illuminate the dark
 extends Node3D
 
-# Flashlight properties
-@export var light_intensity: float = 1.0
+# Flashlight configuration
 @export var light_range: float = 10.0
-@export var battery_level: float = 1.0
-@export var battery_drain_rate: float = 0.01
-@export var battery_recharge_rate: float = 0.005
+@export var light_energy: float = 2.0
+@export var battery_level: float = 100.0
 
-# References to game components
-var game_controller: Node
-var player: Node3D
-var flashlight_light: OmniLight
+# References
+var player: Node3D = null
+var light: OmniLight3D = null
+var game_controller: Node = null
 
-func _ready() -> void:
-	# Get references to game controller
-	game_controller = get_tree().get_first_node_in_group("game_controller")
+func _ready():
+	# Setup flashlight
+	light = $Light
+	player = get_parent()
+	game_controller = get_tree().get_nodes_in_group("game_controller")[0] if get_tree().get_nodes_in_group("game_controller").size() > 0 else null
 	
-	# Get player reference
-	player = get_tree().get_first_node_in_group("player")
+	# Configure light
+	light.range = light_range
+	light.energy = light_energy
+
+func _process(delta):
+	# Update flashlight with player position
+	if player != null:
+		position = player.position + Vector3(0, 0.5, 0.5)
 	
-	# Get flashlight light node
-	flashlight_light = get_node("FlashlightLight")
-	
-	# Setup signals
-	if game_controller:
-		game_controller.connect("game_started", self, "_on_game_started")
-		game_controller.connect("game_over", self, "_on_game_over")
-		game_controller.connect("victory", self, "_on_victory")
+	# Consume battery
+	battery_level -= delta * 0.5
+	if battery_level <= 0:
+		battery_level = 0
+		light.energy = 0
+	else:
+		light.energy = light_energy * (battery_level / 100.0)
 
-func _process(delta: float) -> void:
-	# Update flashlight battery
-	if game_controller.current_state == GameController.GameState.PLAYING:
-		update_flashlight_battery(delta)
-
-func _on_game_started() -> void:
-	# Start flashlight when game starts
-	battery_level = 1.0
-
-func _on_game_over() -> void:
-	# Turn off flashlight when game is over
-	battery_level = 0.0
-
-func _on_victory() -> void:
-	# Turn off flashlight when player wins
-	battery_level = 0.0
-
-func update_flashlight_battery(delta: float) -> void:
-	# Drain battery when flashlight is on
-	if battery_level > 0:
-		battery_level -= battery_drain_rate * delta
-		battery_level = clamp(battery_level, 0.0, 1.0)
-	
-	# Recharge when not in use
-	if battery_level < 1.0:
-		battery_level += battery_recharge_rate * delta
-		battery_level = clamp(battery_level, 0.0, 1.0)
-	
-	# Update light intensity
-	if flashlight_light:
-		flashlight_light.energy = battery_level * light_intensity
-
-func _on_battery_empty() -> void:
-	# Handle battery depletion
-	print("Flashlight battery depleted")
-
-func _on_battery_recharged() -> void:
-	# Handle battery recharging
-	print("Flashlight battery recharged")
+func restore_battery(amount: float):
+	battery_level = min(battery_level + amount, 100.0)
