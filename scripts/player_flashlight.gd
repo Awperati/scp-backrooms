@@ -1,5 +1,8 @@
 ## Flashlight toggle, battery, flicker effect.
+## Toggle with F.
 extends Node3D
+
+@export var toggle_key: Key = KEY_F
 
 var flashlight_on: bool = true
 var enabled: bool = true
@@ -13,8 +16,7 @@ var original_energy: float = 3.0
 func _ready() -> void:
 	var light = get_node("../Flashlight") as SpotLight3D
 	if light:
-		original_energy = light.energy
-		flicker_speed = light.get("flicker_speed") if light.has_method("flicker_speed") else 5.0
+		original_energy = light.light_energy
 
 func _process(delta: float) -> void:
 	var light = get_node("../Flashlight") as SpotLight3D
@@ -41,17 +43,18 @@ func _process(delta: float) -> void:
 	if battery < 20.0:
 		var noise = randf()
 		if noise < 0.3:
-			light.energy = original_energy * 0.3
+			light.light_energy = original_energy * 0.3
 		else:
-			light.energy = original_energy
+			light.light_energy = original_energy
 	else:
 		# Sanity-based flicker
 		var sanity = GameController.sanity
 		if sanity < 30.0:
-			var flicker = 1.0 - randf() * flicker_intensity
-			light.energy = original_energy * flicker
+			var t = Time.get_ticks_msec() / 1000.0
+			var flicker = 1.0 - abs(sin(t * flicker_speed)) * flicker_intensity
+			light.light_energy = original_energy * flicker
 		else:
-			light.energy = original_energy
+			light.light_energy = original_energy
 
 func toggle() -> void:
 	flashlight_on = not flashlight_on
@@ -59,3 +62,8 @@ func toggle() -> void:
 		var light = get_node("../Flashlight") as SpotLight3D
 		if light:
 			light.visible = true
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == toggle_key:
+			toggle()

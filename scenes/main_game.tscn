@@ -1,4 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://maingame001"]
+[gd_scene load_steps=7 format=3 uid="uid://maingame001"]
+
+[ext_resource type="Script" path="res://scripts/player_flashlight.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/audio_manager.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/particle_manager.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/game_controller.gd" id="4"]
+[ext_resource type="Texture2D" path="res://assets/textures/entity_texture.png" id="5"]
+
+[sub_resource type="ParticleProcessMaterial" id="footstepmat"]
+direction = Vector3(0, 1, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 3.0
+scale_min = 0.1
+scale_max = 0.3
 
 [node name="MainGame" type="Node3D"]
 visibility_layer = 1
@@ -11,35 +24,30 @@ rotation = Vector3(0, 0, 0)
 position = Vector3(0, 1.5, 0)
 projection = 1
 
-[node name="Flashlight" type="Node3D" parent="Player"]
+[node name="Flashlight" type="SpotLight3D" parent="Player"]
 position = Vector3(0, 0, 0.5)
+light_energy = 3.0
+light_color = Color(1, 1, 0.8, 1)
+spot_angle = 45.0
+light_attenuation = 15.0
+shadow_enabled = true
 
-[node name="FlashlightLight" type="OmniLight" parent="Flashlight"]
-light_energy = 2.0
-light_color = Color(1, 1, 0.8)
-range = 15.0
-omni_angle = 45.0
-visible = true
-
-[node name="FlashlightProjector" type="Projector" parent="Flashlight"]
-projector = ExtResource("uid://flashlightproj001")
-visible = false
+[node name="FlashlightControl" type="Node3D" parent="Player"]
+script = ExtResource("1")
 
 [node name="FootstepParticles" type="Particles3D" parent="Player"]
 visible = true
-process_material = ExtResource("uid://footstepmat001")
+process_material = SubResource("footstepmat")
 emitting = false
 amount = 50
 lifetime = 1.0
 pre_process_time = 0.1
 speed_scale = 1.0
-fixed_fps = 0
 one_shot = false
 loop = true
-draw_order = 0
 
 [node name="DamageFlash" type="Sprite3D" parent="Player"]
-texture = ExtResource("uid://damageflash001")
+texture = ExtResource("5")
 visible = false
 modulate = Color(1, 0, 0, 0.5)
 
@@ -50,56 +58,38 @@ visibility_layer = 1
 layer = 10
 
 [node name="Control" type="Control" parent="CanvasLayer"]
-size_flags_horizontal = 7
-size_flags_vertical = 7
-custom_colors = {
-	"bg": Color(0, 0, 0, 0.8)
-}
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 0)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-size_flags_horizontal = 2
-size_flags_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="HealthLabel" type="Label" parent="VBoxContainer"]
+[node name="HealthLabel" type="Label" parent="CanvasLayer/Control/VBoxContainer"]
 text = "HEALTH: 100%"
-anchor_right = 1.0
-margin_right = 10
-margin_bottom = 10
-custom_colors = {
-	"font_color": Color(1, 0, 0, 1)
-}
+size_flags_horizontal = 3
+custom_colors/font_color = Color(1, 0, 0, 1)
 
-[node name="SanityLabel" type="Label" parent="VBoxContainer"]
+[node name="SanityLabel" type="Label" parent="CanvasLayer/Control/VBoxContainer"]
 text = "SANITY: 100%"
-anchor_right = 1.0
-margin_right = 10
-margin_bottom = 10
-custom_colors = {
-	"font_color": Color(1, 1, 0, 1)
-}
+size_flags_horizontal = 3
+custom_colors/font_color = Color(1, 1, 0, 1)
 
-[node name="LevelLabel" type="Label" parent="VBoxContainer"]
+[node name="LevelLabel" type="Label" parent="CanvasLayer/Control/VBoxContainer"]
 text = "LEVEL: 1"
-anchor_right = 1.0
-margin_right = 10
-margin_bottom = 10
-custom_colors = {
-	"font_color": Color(0.8, 0.8, 0.8, 1)
-}
+size_flags_horizontal = 3
+custom_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+[node name="StatusLabel" type="Label" parent="CanvasLayer/Control/VBoxContainer"]
 text = "STATUS: OK"
-anchor_right = 1.0
-margin_right = 10
-margin_bottom = 10
-custom_colors = {
-	"font_color": Color(0, 1, 0, 1)
-}
+size_flags_horizontal = 3
+custom_colors/font_color = Color(0, 1, 0, 1)
 
 [node name="AudioManager" type="Node" parent="MainGame"]
-script = ExtResource("uid://audiomgr001")
+script = ExtResource("2")
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="AudioManager"]
 bus = "Music"
@@ -114,7 +104,7 @@ bus = "Ambient"
 volume_db = -15.0
 
 [node name="ParticleManager" type="Node" parent="MainGame"]
-script = ExtResource("uid://partmgr001")
+script = ExtResource("3")
 
 [node name="GameController" type="Node" parent="MainGame"]
-script = ExtResource("uid://gamectrl001")
+script = ExtResource("4")

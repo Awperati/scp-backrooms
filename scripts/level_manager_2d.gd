@@ -1,62 +1,83 @@
 extends Node2D
 
-# Level manager for SCP Backrooms - 2D version
-# Handles level transitions, data drive collection, and exit logic
+# Level manager — holds level data and state.
+@export var level_name: String = "Level 0"
+@export var level_description: String = ""
+@export var level_index: int = 0
+@export var required_drives: int = 2
 
-@onready var data_drives = []
-@onready var exit_door = null
-@onready var level_name = "Level 0"
-@onready var required_drives = 1
-@onready var player = null
+var drives_collected: int = 0
+var is_complete: bool = false
+
+var data_drives: Array[Node2D] = []
+var exit_door: Node2D = null
+var entity_spawner: Node2D = null
+
+var game_manager: Node2D = null
+
+signal level_completed(level)
+signal data_drive_collected(drive)
+signal exit_door_activated(door)
 
 func _ready():
-	# Find all data drives in this level
-	data_drives = get_tree().get_nodes_in_group("data_drive")
-	# Find exit door
-	exit_door = get_node("ExitDoor")
-	
-	# Initialize level
-	print("Level loaded: " + level_name)
-	
-	# Update UI
-	if GameManager.instance:
-		GameManager.instance.update_level_info(level_name, required_drives)
-		GameManager.instance.update_drives_collected(data_drives.size())
-	
-	# Get player reference
-	player = get_tree().get_nodes_in_group("player")
-	if player.size() > 0:
-		player = player[0]
+	add_to_group("level")
+	_find_level_nodes()
 
-func _process(delta):
-	# Check if all data drives are collected
-	if data_drives.size() > 0:
-		var collected = 0
-		for drive in data_drives:
-			if drive.is_collected:
-				collected += 1
-		# Update UI
-		if GameManager.instance:
-			GameManager.instance.update_drives_collected(collected)
-	
-	# Check exit condition
-	if exit_door and exit_door.is_active():
-		if data_drives.size() > 0:
-			var collected = 0
-			for drive in data_drives:
-				if drive.is_collected:
-					collected += 1
-			if collected >= required_drives:
-				# Player can exit
-				if GameManager.instance:
-					GameManager.instance.complete_level()
+func _find_level_nodes():
+	for child in get_children():
+		if child is Node2D:
+			if child.is_in_group("data_drive"):
+				data_drives.append(child)
+				child.collected.connect(_on_drive_collected)
+			elif child.is_in_group("exit_door"):
+				exit_door = child
+				child.door_activated.connect(_on_door_activated)
+				child.player_entered_door.connect(_on_player_entered_door)
+			elif child.is_in_group("entity_spawner"):
+				entity_spawner = child
 
-func collect_data_drive(drive):
-	# Handle data drive collection
-	if GameManager.instance:
-		GameManager.instance.collect_data_drive()
+func _on_drive_collected(drive: Node2D):
+	drives_collected += 1
+	data_drive_collected.emit(drive)
+	if game_manager != null:
+		game_manager.on_data_drive_collected()
+	if drives_collected >= required_drives and exit_door != null:
+		exit_door.activate()
 
-func player_died():
-	# Handle player death
-	if GameManager.instance:
-		GameManager.instance.game_over()
+func _on_door_activated(door: Node2D):
+	exit_door_activated.emit(door)
+	if game_manager != null:
+		game_manager.on_exit_door_activated()
+
+func _on_player_entered_door(player: Node2D):
+	if is_complete:
+		return
+	is_complete = true
+	if game_manager != null:
+		game_manager.on_player_entered_door(player)
+
+func set_game_manager(mgr: Node2D):
+	game_manager = mgr
+
+func get_level_name() -> String:
+	return level_name
+
+func get_drives_collected() -> int:
+	return drives_collected
+
+func get_required_drives() -> int:
+	return required_drives
+
+func is_level_complete() -> bool:
+	return is_complete
+
+func reset():
+	drives_collected = 0
+	is_complete = false
+	for drive in data_drives:
+		if drive != null and is_instance_valid(drive):
+			drive.is_collected = false
+			if drive.has_node("Sprite"):
+				drive.get_node("Sprite").show()
+	if exit_door != null:
+		exit_door.is_active = false
