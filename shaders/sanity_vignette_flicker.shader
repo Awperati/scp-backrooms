@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-uniform float sanity : source_color = 1.0;
+uniform float sanity : 0.0..1.0 = 1.0;
 uniform float vignette_strength = 0.8;
 uniform vec4 vignette_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 uniform float flicker_threshold = 0.3;
