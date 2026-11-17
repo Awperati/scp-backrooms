@@ -73,14 +73,8 @@ func handle_input(delta):
 	if direction.length() > 0:
 		direction = direction.normalized()
 	
-	# Apply movement
-	velocity = direction * speed
-	
-	# Apply velocity
-	position += velocity * delta
-	
-	# Reset velocity
-	velocity = Vector2.ZERO
+	# Apply movement directly to position
+	position += direction * speed * delta
 
 func take_damage(damage):
 	health -= damage

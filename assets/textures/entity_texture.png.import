@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c6a5qrdqd2ht6"
-valid=false
+path="res://.godot/imported/entity_texture.png-9e74071aa651abf471b4ff004c0c0846.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/textures/entity_texture.png"
+dest_files=["res://.godot/imported/entity_texture.png-9e74071aa651abf471b4ff004c0c0846.ctex"]
 
 [params]
 

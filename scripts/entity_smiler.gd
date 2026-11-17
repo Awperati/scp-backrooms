@@ -12,6 +12,7 @@ var last_attack_time: float = 0.0
 
 # Animation and visual properties
 @onready var animation_player = $AnimationPlayer
+@onready var audio_manager = get_tree().get_first_node_in_group("audio_manager")
 
 # Initialize the Smiler entity
 func _ready():
@@ -107,13 +108,25 @@ func attack_player(delta):
 	# Play attack animation
 	if animation_player.has_animation("attack"):
 		animation_player.play("attack")
+	
+	# Play attack sound
+	if audio_manager != null:
+		audio_manager.play_entity_sound()
 
 # Handle damage
 func _on_health_changed(new_health: float, max_health: float):
 	if animation_player.has_animation("damage"):
 		animation_player.play("damage")
+	
+	# Play damage sound
+	if audio_manager != null:
+		audio_manager.play_damage_sound()
 
 # Handle death
 func _on_entity_killed(entity):
 	if animation_player.has_animation("death"):
 		animation_player.play("death")
+	
+	# Play death sound
+	if audio_manager != null:
+		audio_manager.play_entity_sound()
