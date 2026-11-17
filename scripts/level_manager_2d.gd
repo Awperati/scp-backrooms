@@ -28,11 +28,14 @@ func _find_level_nodes():
 		if child is Node2D:
 			if child.is_in_group("data_drive"):
 				data_drives.append(child)
-				child.collected.connect(_on_drive_collected)
+				if child.has_signal("collected"):
+					child.collected.connect(_on_drive_collected)
 			elif child.is_in_group("exit_door"):
 				exit_door = child
-				child.door_activated.connect(_on_door_activated)
-				child.player_entered_door.connect(_on_player_entered_door)
+				if child.has_signal("door_activated"):
+					child.door_activated.connect(_on_door_activated)
+				if child.has_signal("player_entered_door"):
+					child.player_entered_door.connect(_on_player_entered_door)
 			elif child.is_in_group("entity_spawner"):
 				entity_spawner = child
 
