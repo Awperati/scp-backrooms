@@ -15,7 +15,7 @@ func _update_sanity_bar() -> void:
 		sanity_progress.value = GameController.sanity
 
 func _update_inventory() -> void:
-	var inv_label = $Inventory/InvItems
+	var inv_label = $Inventory/VBox/InvItems
 	if inv_label:
 		if GameController.inventory.size() > 0:
 			inv_label.text = "\n".join(GameController.inventory)

@@ -20,6 +20,13 @@ var data_drives_collected = 0
 var total_data_drives = 5
 var level_complete = false
 
+# UI-facing state
+var inventory: Array[String] = []
+var sanity: float = 100.0
+
+signal sanity_changed(value: float)
+signal game_over_emitted()
+
 func _ready():
 	# Start with the title screen
 	show_title_screen()
@@ -93,6 +100,7 @@ func _on_start_game():
 
 func _on_data_drive_collected(_drive = null):
 	data_drives_collected += 1
+	inventory.append("Data Drive")
 	print("Data drive collected! Total: %d/%d" % [data_drives_collected, total_data_drives])
 
 	# All drives collected -> unlock the door and win
@@ -103,6 +111,7 @@ func _on_player_died():
 	if current_state == GameState.GAME_OVER:
 		return
 	current_state = GameState.GAME_OVER
+	game_over_emitted.emit()
 	show_game_over()
 
 func _on_door_unlocked():
@@ -153,6 +162,8 @@ func restart_game():
 	current_state = GameState.START_SCREEN
 	data_drives_collected = 0
 	level_complete = false
+	inventory.clear()
+	sanity = 100.0
 
 	# Back to the title screen
 	show_title_screen()
@@ -160,3 +171,7 @@ func restart_game():
 func _process(delta):
 	if current_state == GameState.PLAYING and current_player:
 		current_player.handle_input(delta)
+		# Decrease sanity over time
+		sanity -= 0.5 * delta
+		sanity = clamp(sanity, 0.0, 100.0)
+		sanity_changed.emit(sanity)

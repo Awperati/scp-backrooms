@@ -43,7 +43,7 @@ horizontal_alignment=1
 [node name="SanityProgress" type="TextureProgressBar" parent="UI/SanityBar"]
 value=100.0
 
-[node name="Inventory" type="VBoxContainer" parent="UI"]
+[node name="Inventory" type="PanelContainer" parent="UI"]
 anchors_preset=8
 anchor_left=1.0
 anchor_top=0.5
@@ -52,13 +52,20 @@ anchor_bottom=1.0
 grow_horizontal=0
 grow_vertical=0
 layout_mode=1
+theme_override_colors/panel_bg_color="&h1a1a2e"
 
-[node name="InvLabel" type="Label" parent="UI/Inventory"]
+[node name="VBox" type="VBoxContainer" parent="UI/Inventory"]
+layout_mode=2
+
+[node name="InvLabel" type="Label" parent="UI/Inventory/VBox"]
 text="INVENTORY"
 horizontal_alignment=1
+layout_mode=2
 
-[node name="InvItems" type="Label" parent="UI/Inventory"]
-text=""
+[node name="InvItems" type="Label" parent="UI/Inventory/VBox"]
+text="Empty"
+horizontal_alignment=1
+layout_mode=2
 
 [node name="SanityVignette" type="ColorRect" parent="UI"]
 anchors_preset=15
