@@ -1,18 +1,7 @@
-[gd_scene load_steps=1 format=3 uid="uid://c275088l48833"]
+[gd_scene load_steps=2 format=3 uid="uid://spawn_point"]
 
-[ext_resource type="PackedScene" path="res://scenes/entities/entity_2d_smiler.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/entities/entity_2d_stalker.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/entities/entity_2d_hound.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/entities/entity_2d_watcher.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/entities/entity_2d_whisperer.tscn" id="5"]
+[ext_resource type="Script" path="res://scripts/spawn_point_2d.gd" id="1"]
 
-[node name="SpawnPoint2D" type="Node2D"]
-scripts = [  ]
-
-[node name="SpawnArea" type="CollisionShape2D" parent="SpawnPoint2D"]
-shape = ExtResource("6")
-position = Vector2(0, 0)
-
-[resource]
-type = "RectangleShape2D"
-extents = Vector2(50, 50)
+[node name="SpawnPoint" type="Node2D"]
+script = ExtResource("1")
+entity_type = "smiler"

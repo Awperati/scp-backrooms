@@ -1,43 +1,21 @@
-[gd_scene load_steps=1 format=3 uid="uid://c275088l48833"]
+[gd_scene load_steps=4 format=3 uid="uid://player_2d"]
 
-[ext_resource type="PackedScene" path="res://scenes/player/player_2d.tscn" id="1"]
-[ext_resource type="Texture2D" path="res://assets/player/player_sprite.png" id="2"]
-[ext_resource type="Sprite2D" path="res://scenes/player/player_2d.tscn::1" id="3"]
-[ext_resource type="CollisionShape2D" path="res://scenes/player/player_2d.tscn::2" id="4"]
+[ext_resource type="Script" path="res://scripts/player_2d.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/textures/placeholder/player.png" id="2"]
 
-[node name="Player2D" type="Node2D"]
-scripts = [  ]
+[sub_resource type="CircleShape2D" id="shape_player"]
+radius = 12.0
 
-[node name="Sprite" type="Sprite2D" parent="Player2D"]
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1")
+
+[node name="Sprite" type="Sprite2D" parent="."]
 texture = ExtResource("2")
-position = Vector2(0, 0)
 
-[node name="CollisionShape" type="CollisionShape2D" parent="Player2D"]
-shape = ExtResource("4")
-position = Vector2(0, 0)
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("shape_player")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Player2D"]
-current_animation = "idle"
-
-[node name="Flashlight" type="Node2D" parent="Player2D"]
-position = Vector2(0, 0)
-
-[node name="FlashlightLight" type="Light2D" parent="Flashlight"]
-light_energy = 2.0
+[node name="Flashlight" type="Light2D" parent="."]
+light_energy = 1.5
 light_color = Color(1, 1, 0.8)
-range = 150.0
-omni_angle = 45.0
-enabled = true
-
-[node name="FootstepParticles" type="Particles2D" parent="Player2D"]
-emitting = false
-amount = 50
-lifetime = 1.0
-process_material = ExtResource("5")
-
-[resource]
-type = "CircleShape2D"
-radius = 10.0
-[resource]
-type = "GDScript"
-resource_path = "res://scripts/player_2d.gd"
+texture = ExtResource("2")
