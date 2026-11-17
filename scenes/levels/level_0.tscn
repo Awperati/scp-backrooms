@@ -1,10 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://level001"]
+[gd_scene load_steps=8 format=3 uid="uid://level_0"]
 
 [ext_resource type="Script" path="res://scripts/level_manager.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/textures/floor_texture.png" id="2"]
 [ext_resource type="Script" path="res://scripts/data_drive_2d.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/exit_door_2d.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/entity_spawner_2d.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/spawn_point_2d.gd" id="6"]
+[ext_resource type="Texture2D" path="res://assets/textures/placeholder/data_drive.png" id="7"]
+
+[sub_resource type="RectangleShape2D" id="shape_door"]
+extents = Vector2(20, 20)
 
 [node name="Level0" type="Node2D"]
 script = ExtResource("1")
@@ -14,7 +19,6 @@ level_index = 0
 
 [node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("2")
-position = Vector2(0, 0)
 scale = Vector2(2, 2)
 
 [node name="DataDrive1" type="Node2D" parent="."]
@@ -22,18 +26,61 @@ script = ExtResource("3")
 position = Vector2(5, 5)
 drive_id = "drive_001"
 
+[node name="Sprite" type="Sprite2D" parent="DataDrive1"]
+texture = ExtResource("7")
+
 [node name="DataDrive2" type="Node2D" parent="."]
 script = ExtResource("3")
 position = Vector2(-5, -5)
 drive_id = "drive_002"
 
-[node name="ExitDoor" type="Node2D" parent="."]
+[node name="Sprite" type="Sprite2D" parent="DataDrive2"]
+texture = ExtResource("7")
+
+[node name="ExitDoor" type="Area2D" parent="."]
 script = ExtResource("4")
 position = Vector2(10, 10)
 door_id = "exit_door_001"
-required_drives = 3
+required_drives = 2
 
-[node name="EntitySpawner" type="Node" parent="."]
+[node name="Sprite" type="Sprite2D" parent="ExitDoor"]
+texture = ExtResource("7")
+modulate = Color(1, 1, 1, 0.3)
+
+[node name="Collision" type="CollisionShape2D" parent="ExitDoor"]
+shape = SubResource("shape_door")
+
+[node name="EntitySpawner" type="Node2D" parent="."]
 script = ExtResource("5")
-spawn_rate = 3.0
-max_entities = 5
+current_level = 0
+max_entities_per_level = 5
+
+[node name="SpawnPoint_smiler" type="Node2D" parent="."]
+script = ExtResource("6")
+position = Vector2(3, 3)
+entity_type = "smiler"
+
+[node name="SpawnPoint_stalker" type="Node2D" parent="."]
+script = ExtResource("6")
+position = Vector2(-3, 3)
+entity_type = "stalker"
+
+[node name="SpawnPoint_hound" type="Node2D" parent="."]
+script = ExtResource("6")
+position = Vector2(3, -3)
+entity_type = "hound"
+
+[node name="SpawnPoint_watcher" type="Node2D" parent="."]
+script = ExtResource("6")
+position = Vector2(-3, -3)
+entity_type = "watcher"
+
+[node name="SpawnPoint_whisperer" type="Node2D" parent="."]
+script = ExtResource("6")
+position = Vector2(0, 5)
+entity_type = "whisperer"
+
+[node name="SpawnPoint_floating" type="Node2D" parent="."]
+script = ExtResource("6")
+position = Vector2(0, -5)
+entity_type = "floating"
