@@ -1,29 +1,36 @@
-extends Node2D
+extends Area2D
 
-# Exit door for 2D levels
-@export var is_active = false
-@export var required_drives = 2
+# Exit door — activates when enough data drives collected.
+@export var door_id: String = "exit_door_001"
+@export var required_drives: int = 2
+var is_active: bool = false
+
+signal door_activated(door)
+signal player_entered_door(player)
 
 func _ready():
 	add_to_group("exit_door")
-
-func is_active():
-	return is_active
+	body_entered.connect(_on_body_entered)
 
 func activate():
+	if is_active:
+		return
 	is_active = true
-	# Change door appearance
-	$Sprite.modulate = Color(1, 1, 1, 1)  # Make it visible
+	if has_node("Sprite"):
+		$Sprite.modulate = Color(0.2, 1.0, 0.2, 1.0)
+	door_activated.emit(self)
 
-func _on_body_entered(body):
-	if body.name == "Player":
-		# Check if player has collected required drives
-		var level_manager = get_parent().get_parent()
-		if level_manager:
-			var collected = 0
-			for drive in level_manager.data_drives:
-				if drive.is_collected:
-					collected += 1
-			if collected >= required_drives:
-				# Activate door
-				activate()
+func _on_body_entered(body: Node2D):
+	if body.is_in_group("player") and is_active:
+		player_entered_door.emit(body)
+
+func set_active(active: bool):
+	is_active = active
+	if has_node("Sprite"):
+		$Sprite.modulate = Color(1, 1, 1, 1) if active else Color(1, 1, 1, 0.3)
+
+func get_door_id() -> String:
+	return door_id
+
+func is_active_check() -> bool:
+	return is_active

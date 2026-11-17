@@ -1,19 +1,24 @@
 extends Node2D
 
-# Data drive for 2D levels
-@export var is_collected = false
-@export var drive_id = 0
+# Data drive — player collects these to unlock the exit.
+@export var drive_id: String = "drive_001"
+var is_collected: bool = false
+
+signal collected(drive)
 
 func _ready():
 	add_to_group("data_drive")
 
 func collect():
-	if not is_collected:
-		is_collected = true
-		# Play collection sound
-		if $AudioStreamPlayer:
-			$AudioStreamPlayer.play()
-		# Hide the drive
+	if is_collected:
+		return
+	is_collected = true
+	if has_node("Sprite"):
 		$Sprite.hide()
-		# Notify level manager
-		get_parent().get_parent().collect_data_drive(self)
+	collected.emit(self)
+
+func get_drive_id() -> String:
+	return drive_id
+
+func is_collected_check() -> bool:
+	return is_collected

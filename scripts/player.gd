@@ -3,6 +3,7 @@ extends "res://scripts/entity_base_2d.gd"
 # Player-specific behavior
 signal data_drive_collected
 signal player_died
+signal health_changed(value: float)
 signal door_unlocked
 signal door_opened
 signal door_closed
@@ -78,6 +79,7 @@ func handle_input(delta):
 
 func take_damage(damage):
 	health -= damage
+	health_changed.emit(health)
 	if health <= 0:
 		queue_free()
 		emit_signal("player_died")

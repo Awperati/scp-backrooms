@@ -28,10 +28,29 @@ theme_override_font_sizes/font_size=24
 text="SCP: BACKROOMS"
 horizontal_alignment=1
 
+[node name="HealthBar" type="VBoxContainer" parent="UI"]
+anchors_preset=7
+anchor_right=0.5
+anchor_bottom=1.0
+offset_bottom=-60
+grow_horizontal=2
+grow_vertical=0
+layout_mode=1
+
+[node name="HealthLabel" type="Label" parent="UI/HealthBar"]
+text="HEALTH"
+horizontal_alignment=1
+layout_mode=2
+
+[node name="HealthProgress" type="TextureProgressBar" parent="UI/HealthBar"]
+value=100.0
+layout_mode=2
+
 [node name="SanityBar" type="VBoxContainer" parent="UI"]
 anchors_preset=7
 anchor_right=0.5
 anchor_bottom=1.0
+offset_bottom=-30
 grow_horizontal=2
 grow_vertical=0
 layout_mode=1

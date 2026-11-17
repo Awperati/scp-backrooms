@@ -23,8 +23,11 @@ var level_complete = false
 # UI-facing state
 var inventory: Array[String] = []
 var sanity: float = 100.0
+var health: float = 100.0
+var max_health: float = 100.0
 
 signal sanity_changed(value: float)
+signal health_changed(value: float)
 signal game_over_emitted()
 
 func _ready():
@@ -88,6 +91,7 @@ func spawn_player():
 
 	# Connect player signals
 	current_player.connect("data_drive_collected", _on_data_drive_collected)
+	current_player.connect("health_changed", _on_player_health_changed)
 	current_player.connect("player_died", _on_player_died)
 	current_player.connect("door_unlocked", _on_door_unlocked)
 	current_player.connect("door_opened", _on_door_opened)
@@ -102,10 +106,14 @@ func _on_data_drive_collected(_drive = null):
 	data_drives_collected += 1
 	inventory.append("Data Drive")
 	print("Data drive collected! Total: %d/%d" % [data_drives_collected, total_data_drives])
-
+	
 	# All drives collected -> unlock the door and win
 	if data_drives_collected >= total_data_drives and not level_complete:
 		unlock_exit_door()
+
+func _on_player_health_changed(value: float):
+	health = value
+	health_changed.emit(value)
 
 func _on_player_died():
 	if current_state == GameState.GAME_OVER:
@@ -164,6 +172,7 @@ func restart_game():
 	level_complete = false
 	inventory.clear()
 	sanity = 100.0
+	health = 100.0
 
 	# Back to the title screen
 	show_title_screen()
