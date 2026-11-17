@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://level_0"]
 
 [ext_resource type="Script" path="res://scripts/level_manager.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/textures/floor_texture.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/textures/placeholder/floor.png" id="2"]
 [ext_resource type="Script" path="res://scripts/data_drive_2d.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/exit_door_2d.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/entity_spawner_2d.gd" id="5"]
