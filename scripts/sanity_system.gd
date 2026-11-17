@@ -8,6 +8,9 @@ var sanity_decrease_rate = 0.1
 var sanity_increase_rate = 0.5
 
 func _ready():
+	# Add to group so other nodes can find this
+	add_to_group("sanity_system")
+	
 	# Start the sanity decrease timer
 	set_process(true)
 
