@@ -1,97 +1,50 @@
 extends "res://scripts/entity_base_2d.gd"
 
-# Smiler Entity for 2D version
-# This class implements the specific behavior for the Smiler entity in 2D
-
-# Entity-specific properties
+# Smiler — slow, melee, visible
 @export var detection_range: float = 8.0
 @export var attack_range: float = 1.5
-@export var damage: float = 25.0
+@export var attack_damage: float = 25.0
 @export var speed: float = 2.0
 @export var attack_cooldown: float = 2.0
-@export var last_attack_time: float = 0.0
 
-# Animation and visual properties
-@onready var animation_player = $AnimationPlayer
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 
-# Initialize the Smiler entity
 func _ready():
-	# Call parent initialization
 	super._ready()
-	
-	# Set entity-specific properties
 	entity_type = "SMILER"
 	max_health = 100.0
 	health = max_health
-	speed = 2.0
-	detection_range = 8.0
-	attack_range = 1.5
-	damage = 25.0
-	
-	# Connect signals
-	connect("entity_damaged", self, "_on_entity_damaged")
-	connect("entity_killed", self, "_on_entity_killed")
+	entity_damaged.connect(_on_entity_damaged)
+	entity_destroyed.connect(_on_entity_destroyed)
 
-# Process function for behavior
-func _process(delta):
-	# Call parent process
-	super._process(delta)
-	
-	# Check if player is in range and attack if necessary
-	if player != null and is_alive:
-		var distance_to_player = get_distance_to_player()
-		
-		# If player is in detection range, start pursuing
-		if distance_to_player <= detection_range and distance_to_player > attack_range:
-			pursue_player(delta)
-		# If player is close enough to attack, attack
-		elif distance_to_player <= attack_range:
-			attack_player(delta)
+func update_entity(delta: float):
+	if player == null or not is_alive:
+		return
+	var dist = global_position.distance_to(player.global_position)
+	if dist <= attack_range:
+		_try_attack()
+	elif dist <= detection_range:
+		move_towards(player.global_position, delta)
 
-# Pursue the player
-func pursue_player(delta):
-	if player == null:
+func _try_attack():
+	var now = Time.get_ticks_msec() / 1000.0
+	if now - last_attack_time < attack_cooldown:
 		return
-	
-	var direction = (player.position - position).normalized()
-	velocity = direction * speed
-	
-	# Apply movement
-	move_and_slide()
-	
-	# Rotate to face player
-	if direction != Vector2.ZERO:
-		rotation = direction.angle_to(Vector2.RIGHT)
-
-# Attack the player
-func attack_player(delta):
-	if player == null:
-		return
-	
-	# Check if attack is on cooldown
-	var current_time = Time.get_ticks_msec() / 1000.0
-	if current_time - last_attack_time < attack_cooldown:
-		return
-	
-	# Perform attack
-	last_attack_time = current_time
-	player.take_damage(damage)
-	
-	# Play attack animation
+	last_attack_time = now
+	is_attacking = true
+	player.take_damage(attack_damage)
+	entity_attacked.emit(self, player, attack_damage)
 	if animation_player.has_animation("attack"):
 		animation_player.play("attack")
+	# Reset attacking flag after a short delay
+	await get_tree().create_timer(0.3).timeout
+	is_attacking = false
 
-# Handle damage
-func _on_entity_damaged(amount: float, new_health: float):
-	# Play damage animation or effect
+func _on_entity_damaged(_entity, _amount):
 	if animation_player.has_animation("damage"):
 		animation_player.play("damage")
 
-# Handle death
-func _on_entity_killed(entity):
-	# Play death animation or effect
+func _on_entity_destroyed(_entity):
 	if animation_player.has_animation("death"):
 		animation_player.play("death")
-	
-	# Remove entity from game
 	queue_free()
