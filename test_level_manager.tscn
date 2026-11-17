@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://lvltest"]
+
+[ext_resource type="Script" path="res://scripts/level_manager.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/entity_base.gd" id="2"]
+
+[node name="LevelTest" type="Node3D"]
+script = ExtResource("1")
+level_scene_path = "res://scenes/levels/level_0.tscn"
+
+[node name="Player" type="CharacterBody3D" parent="."]
+script = ExtResource("2")
+position = Vector3(0, 0, 0)
