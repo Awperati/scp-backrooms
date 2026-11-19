@@ -1,11 +1,8 @@
 extends "res://scripts/entity_base_2d.gd"
 
 # Smiler — slow, melee, visible
-@export var detection_range: float = 8.0
-@export var attack_range: float = 1.5
-@export var attack_damage: float = 25.0
-@export var speed: float = 2.0
-@export var attack_cooldown: float = 2.0
+# (detection_range / attack_range / attack_damage / speed / attack_cooldown
+#  come from entity_base_2d.gd and are set in _ready below.)
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
@@ -14,6 +11,11 @@ func _ready():
 	entity_type = "SMILER"
 	max_health = 100.0
 	health = max_health
+	detection_range = 8.0
+	attack_range = 1.5
+	attack_damage = 25.0
+	speed = 2.0
+	attack_cooldown = 2.0
 	entity_damaged.connect(_on_entity_damaged)
 	entity_destroyed.connect(_on_entity_destroyed)
 

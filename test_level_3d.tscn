@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://lvltest3d"]
+
+[ext_resource type="Script" path="res://scripts/spawn_point_2d.gd" id="1"]
+
+[node name="Level0" type="Node2D"]
+
+[node name="SpawnPoint_smiler" type="Node2D" parent="."]
+script = ExtResource("1")
+position = Vector2(5, 3)
+entity_type = "smiler"
+
+[node name="SpawnPoint_stalker" type="Node2D" parent="."]
+script = ExtResource("1")
+position = Vector2(-5, -3)
+entity_type = "stalker"

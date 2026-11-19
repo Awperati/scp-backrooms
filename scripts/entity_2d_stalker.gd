@@ -1,11 +1,8 @@
 extends "res://scripts/entity_base_2d.gd"
 
 # Stalker — faster, more health, patrols when player is far
-@export var detection_range: float = 10.0
-@export var attack_range: float = 1.0
-@export var attack_damage: float = 30.0
-@export var speed: float = 3.0
-@export var attack_cooldown: float = 1.5
+# (detection_range / attack_range / attack_damage / speed / attack_cooldown
+#  come from entity_base_2d.gd and are set in _ready below.)
 
 var idle_timer: float = 0.0
 var is_patrolling: bool = true
@@ -17,6 +14,11 @@ func _ready():
 	entity_type = "STALKER"
 	max_health = 150.0
 	health = max_health
+	detection_range = 10.0
+	attack_range = 1.0
+	attack_damage = 30.0
+	speed = 3.0
+	attack_cooldown = 1.5
 	entity_damaged.connect(_on_entity_damaged)
 	entity_destroyed.connect(_on_entity_destroyed)
 

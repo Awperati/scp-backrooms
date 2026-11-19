@@ -21,8 +21,7 @@ var game_controller: Node = null
 var entity_manager: Node = null
 var is_alive: bool = true
 
-# Movement
-var velocity: Vector3 = Vector3.ZERO
+# Movement — uses CharacterBody3D's built-in velocity
 
 # Damage and health system
 signal health_changed(new_health, max_health)
@@ -41,7 +40,7 @@ func _ready():
 		entity_manager.add_entity(self)
 	
 	# Connect health changed signal
-	connect("health_changed", self, "_on_health_changed")
+	health_changed.connect(_on_health_changed)
 
 func _process(delta):
 	# Override in child classes for behavior
@@ -101,7 +100,7 @@ func kill_entity():
 # Utility methods
 func get_distance_to_player() -> float:
 	if player == null:
-		return INFINITY
+		return INF
 	return position.distance_to(player.position)
 
 func is_player_in_range(range: float) -> bool:

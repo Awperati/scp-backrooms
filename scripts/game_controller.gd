@@ -16,6 +16,7 @@ var player_scene = preload("res://scenes/entities/player.tscn")
 var current_player = null
 var current_screen = null
 var current_level = null
+var entity_spawner = null
 var data_drives_collected = 0
 var total_data_drives = 5
 var level_complete = false
@@ -79,6 +80,22 @@ func load_level(level_number):
 
 	# Spawn the player into the level
 	spawn_player()
+
+	# Spawn entities at random positions, capped at the spawner's max.
+	_spawn_entities()
+
+func _spawn_entities():
+	# Replace any previous spawner (and the entities it owns).
+	if entity_spawner != null:
+		entity_spawner.clear()
+		entity_spawner.queue_free()
+		entity_spawner = null
+
+	entity_spawner = load("res://scripts/entity_spawner.gd").new()
+	entity_spawner.set_player(current_player)
+	add_child(entity_spawner)
+	entity_spawner.spawn_random_entities(entity_spawner.max_entities)
+	print("Spawned %d entities (max %d)." % [entity_spawner.get_current_count(), entity_spawner.max_entities])
 
 func spawn_player():
 	if current_player != null:
@@ -165,6 +182,10 @@ func restart_game():
 	if current_player != null:
 		current_player.queue_free()
 		current_player = null
+	if entity_spawner != null:
+		entity_spawner.clear()
+		entity_spawner.queue_free()
+		entity_spawner = null
 
 	# Reset game state
 	current_state = GameState.START_SCREEN

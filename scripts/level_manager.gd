@@ -3,13 +3,15 @@ extends Node3D
 # 3D level manager — loads/unloads level scenes, spawns entities, places the player.
 
 @export var level_scene_path: String = "res://scenes/levels/level_0.tscn"
+@export var player_node_path: NodePath = NodePath("")
 @export var player_spawn_group: String = "player"
+@export var player_group_fallback: String = "entity"
 @export var spawn_point_group: String = "spawn_point"
 @export var entity_spawner_group: String = "entity_spawner"
 
 var current_level: Node = null
 var player: Node = null
-var game_manager: Node = null
+var game_manager = null
 
 signal level_loaded(level)
 signal level_unloaded(level)
@@ -54,7 +56,13 @@ func unload_level():
 # --- Player placement ---
 
 func _place_player():
-	player = get_tree().get_first_node_in_group(player_spawn_group)
+	# Find the player: by export path, then by group, then by name.
+	if player_node_path != NodePath(""):
+		player = get_node_or_null(player_node_path)
+	if player == null:
+		player = get_tree().get_first_node_in_group(player_spawn_group)
+	if player == null:
+		player = get_tree().get_first_node_in_group(player_group_fallback)
 	if player == null:
 		return
 	var spawn = _find_spawn_point()
@@ -83,8 +91,6 @@ func _spawn_entities():
 	var spawner = _find_entity_spawner()
 	if spawner == null:
 		return
-	if spawner.has_method("set_game_manager"):
-		spawner.set_game_manager(game_manager)
 	if spawner.has_method("spawn_entities"):
 		spawner.spawn_entities()
 		if spawner.has_method("get_spawned_entities"):

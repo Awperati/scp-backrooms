@@ -1,11 +1,8 @@
 extends "res://scripts/entity_base_2d.gd"
 
 # Hound — fast, aggressive, patrols between fixed points
-@export var detection_range: float = 12.0
-@export var attack_range: float = 2.0
-@export var attack_damage: float = 35.0
-@export var speed: float = 4.0
-@export var attack_cooldown: float = 1.0
+# (detection_range / attack_range / attack_damage / speed / attack_cooldown
+#  come from entity_base_2d.gd and are set in _ready below.)
 @export var patrol_points: Array[Vector2] = [
 	Vector2(-100, -100),
 	Vector2(100, -100),
@@ -22,6 +19,11 @@ func _ready():
 	entity_type = "HOUND"
 	max_health = 200.0
 	health = max_health
+	detection_range = 12.0
+	attack_range = 2.0
+	attack_damage = 35.0
+	speed = 4.0
+	attack_cooldown = 1.0
 	current_patrol_index = 0
 	entity_damaged.connect(_on_entity_damaged)
 	entity_destroyed.connect(_on_entity_destroyed)

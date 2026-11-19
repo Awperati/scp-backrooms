@@ -1,11 +1,8 @@
 extends "res://scripts/entity_base_2d.gd"
 
 # Watcher — invisible most of the time, blinks visible briefly
-@export var detection_range: float = 15.0
-@export var attack_range: float = 3.0
-@export var attack_damage: float = 40.0
-@export var speed: float = 2.5
-@export var attack_cooldown: float = 3.0
+# (detection_range / attack_range / attack_damage / speed / attack_cooldown
+#  come from entity_base_2d.gd and are set in _ready below.)
 @export var blink_interval: float = 2.0
 
 var blink_timer: float = 0.0
@@ -18,6 +15,11 @@ func _ready():
 	entity_type = "WATCHER"
 	max_health = 250.0
 	health = max_health
+	detection_range = 15.0
+	attack_range = 3.0
+	attack_damage = 40.0
+	speed = 2.5
+	attack_cooldown = 3.0
 	modulate.a = 0.0
 	entity_damaged.connect(_on_entity_damaged)
 	entity_destroyed.connect(_on_entity_destroyed)

@@ -1,60 +1,85 @@
 extends Node
 
-# Entity spawner for the SCP Backrooms game
+# Entity spawner for the active 2D flow.
+# Spawns entities at random positions inside the level, capped at max_entities.
+# Uses the 2D entity scenes (entity_2d_*.tscn) and hands each one the player
+# so it can chase and attack. Destroyed entities free a slot so the level can
+# refill up to the cap.
 
-# Configuration
-var spawn_positions = []
+# The 5 entity types and the 2D scene each one uses.
 var entity_types = ["smiler", "hound", "stalker", "watcher", "whisperer"]
-var max_entities = 10
-var current_entities = 0
+var entity_scenes = {
+	"smiler": "res://scenes/entities/entity_2d_smiler.tscn",
+	"hound": "res://scenes/entities/entity_2d_hound.tscn",
+	"stalker": "res://scenes/entities/entity_2d_stalker.tscn",
+	"watcher": "res://scenes/entities/entity_2d_watcher.tscn",
+	"whisperer": "res://scenes/entities/entity_2d_whisperer.tscn",
+}
 
-func _ready():
-	# Initialize spawn positions
-	# This would normally be set from level data
-	spawn_positions = [
-		Vector2(5, 5),
-		Vector2(10, 10),
-		Vector2(15, 5),
-		Vector2(5, 15),
-		Vector2(15, 15)
-	]
+# Maximum number of entities alive at once.
+@export var max_entities: int = 10
+# Half-size of the square area entities spawn in (centered on the level origin).
+@export var spawn_area: float = 10.0
 
-func spawn_entity(entity_type, position):
-	# Spawn an entity of the specified type at the given position
-	if current_entities >= max_entities:
+var current_player: Node2D = null
+var _spawned: Array = []
+
+signal entity_spawned(entity)
+signal entities_spawned(count)
+
+# Give the spawner the player so every entity knows who to chase and attack.
+func set_player(p: Node2D):
+	current_player = p
+	for entity in _spawned:
+		entity.set_player(p)
+
+# Spawn a single entity of the given type at a random position.
+# Returns the entity, or null if the cap is reached or the type is unknown.
+func spawn_entity(entity_type: String, position: Vector2 = Vector2.ZERO):
+	if _spawned.size() >= max_entities:
 		return null
-	
-	# Load the entity scene
-	var entity_scene = preload("res://scenes/entities/entity_" + entity_type + ".tscn")
-	
-	# Instance the scene
-	var entity = entity_scene.instantiate()
-	entity.position = position
-	
-	# Add to scene
+	var path = entity_scenes.get(entity_type)
+	if path == null:
+		return null
+	var entity = load(path).instantiate()
+	if current_player:
+		entity.set_player(current_player)
 	add_child(entity)
-	
-	# Increment entity count
-	current_entities += 1
-	
-	# Connect to entity destruction signal
-	entity.connect("entity_destroyed", self, "on_entity_destroyed")
-	
+	entity.position = position
+	_spawned.append(entity)
+	entity.entity_destroyed.connect(_on_entity_destroyed)
+	entity_spawned.emit(entity)
 	return entity
 
-func spawn_random_entity(position):
-	# Spawn a random entity type at the given position
-	var entity_type = entity_types[randi() % entity_types.size()]
-	return spawn_entity(entity_type, position)
+# Spawn one random entity type at a random position inside the spawn area.
+func spawn_random_entity() -> Node2D:
+	var type = entity_types[randi() % entity_types.size()]
+	return spawn_entity(type, _random_position())
 
-func on_entity_destroyed(entity):
-	# Handle entity destruction
-	current_entities -= 1
+# Fill up to max_entities with random entities at random positions.
+func spawn_random_entities(count: int):
+	var n = mini(count, max_entities)
+	for i in range(n):
+		spawn_random_entity()
+	entities_spawned.emit(_spawned.size())
 
-func spawn_entities_in_radius(center, radius, count):
-	# Spawn multiple entities within a radius
-	for i in range(count):
-		var angle = randf() * 2 * PI
-		var distance = randf() * radius
-		var spawn_pos = center + Vector2(cos(angle) * distance, sin(angle) * distance)
-		spawn_random_entity(spawn_pos)
+# A random point inside the square spawn area.
+func _random_position() -> Vector2:
+	return Vector2(
+		randf_range(-spawn_area, spawn_area),
+		randf_range(-spawn_area, spawn_area)
+	)
+
+func _on_entity_destroyed(entity: Node2D):
+	_spawned.erase(entity)
+
+# How many entities are alive right now.
+func get_current_count() -> int:
+	return _spawned.size()
+
+# Remove every spawned entity (used when the level or game is torn down).
+func clear():
+	for entity in _spawned.duplicate():
+		if is_instance_valid(entity):
+			entity.queue_free()
+	_spawned.clear()

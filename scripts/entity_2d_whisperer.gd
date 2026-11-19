@@ -1,11 +1,8 @@
 extends "res://scripts/entity_base_2d.gd"
 
 # Whisperer — long range, slow attack, whispers periodically
-@export var detection_range: float = 20.0
-@export var attack_range: float = 4.0
-@export var attack_damage: float = 50.0
-@export var speed: float = 3.5
-@export var attack_cooldown: float = 4.0
+# (detection_range / attack_range / attack_damage / speed / attack_cooldown
+#  come from entity_base_2d.gd and are set in _ready below.)
 @export var whisper_interval: float = 5.0
 
 var whisper_timer: float = 0.0
@@ -19,6 +16,11 @@ func _ready():
 	entity_type = "WHISPERER"
 	max_health = 300.0
 	health = max_health
+	detection_range = 20.0
+	attack_range = 4.0
+	attack_damage = 50.0
+	speed = 3.5
+	attack_cooldown = 4.0
 	entity_damaged.connect(_on_entity_damaged)
 	entity_destroyed.connect(_on_entity_destroyed)
 

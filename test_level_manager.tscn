@@ -1,12 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://lvltest"]
+[gd_scene load_steps=4 format=3 uid="uid://lvltest"]
 
 [ext_resource type="Script" path="res://scripts/level_manager.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/entity_base.gd" id="2"]
+[ext_resource type="Script" path="res://test_verify.gd" id="3"]
 
 [node name="LevelTest" type="Node3D"]
 script = ExtResource("1")
-level_scene_path = "res://scenes/levels/level_0.tscn"
+level_scene_path = "res://test_level_3d.tscn"
+player_node_path = NodePath("Player")
 
 [node name="Player" type="CharacterBody3D" parent="."]
 script = ExtResource("2")
 position = Vector3(0, 0, 0)
+
+[node name="Verify" type="Node" parent="."]
+script = ExtResource("3")
